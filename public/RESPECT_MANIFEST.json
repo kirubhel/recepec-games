@@ -1,0 +1,23 @@
+{
+  "name": {
+    "en-US": "Learning Cloud Games",
+    "am-ET": "ለርኒንግ ክላውድ ጨዋታዎች",
+    "om-ET": "Tapha Barsiisota Cloud"
+  },
+  "description": {
+    "en-US": "Fun educational games for literacy and numeracy.",
+    "am-ET": "ለልጆች የሚሆኑ አዝናኝ እና አስተማሪ ጨዋታዎች።",
+    "om-ET": "Tapha barsiisaa barumsaa fi herregaa."
+  },
+  "license": "MIT",
+  "website": "https://learningcloud.et/",
+  "icon": "logo.webp",
+  "learningUnits": "opds.json",
+  "defaultLaunchUri": "fidelio://launch",
+  "android": {
+    "packageId": "world.respect.fidelio",
+    "stores": [
+      "https://play.google.com/store/apps/details?id=world.respect.fidelio"
+    ]
+  }
+}

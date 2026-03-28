@@ -1,0 +1,35 @@
+{
+  "metadata": {
+    "title": "Learning Cloud Educational Games"
+  },
+  "links": [
+    {
+      "rel": "self",
+      "href": "opds.json",
+      "type": "application/opds+json"
+    }
+  ],
+  "publications": [
+    {
+      "metadata": {
+        "title": "Letter Arrangement",
+        "description": "Learn to arrange letters and spell words.",
+        "author": "Learning Cloud",
+        "language": "en"
+      },
+      "links": [
+        {
+          "rel": "self",
+          "href": "units/letter-arrangement/manifest.json",
+          "type": "application/webpub+json"
+        }
+      ],
+      "images": [
+        {
+          "href": "logo.webp",
+          "type": "image/webp"
+        }
+      ]
+    }
+  ]
+}
