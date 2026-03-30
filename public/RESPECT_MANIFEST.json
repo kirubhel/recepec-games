@@ -11,8 +11,8 @@
   },
   "license": "MIT",
   "website": "https://learningcloud.et/",
-  "icon": "logo.webp",
-  "learningUnits": "opds.json",
+  "icon": "http://localhost:3000/logo.webp",
+  "learningUnits": "http://localhost:3000/opds.json",
   "defaultLaunchUri": "fidelio://launch",
   "android": {
     "packageId": "world.respect.fidelio",

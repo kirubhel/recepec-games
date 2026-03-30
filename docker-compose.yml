@@ -1,0 +1,18 @@
+services:
+  respect-minimal-games:
+    image: respect-minimal-games:latest
+    container_name: respect-minimal-games
+    restart: unless-stopped
+    ports:
+      - "9014:9014"
+    environment:
+      - NODE_ENV=production
+      - PORT=9014
+      - BASE_PATH=/respect-minimal-games
+    networks:
+      - elearning-network
+
+networks:
+  elearning-network:
+    external: true
+    name: e-learning_elearning-network

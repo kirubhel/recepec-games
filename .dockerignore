@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.gitignore
+*.tar
+Dockerfile
+deploy.sh
+README.md
+respect-minimal-games.tar

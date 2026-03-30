@@ -5,7 +5,7 @@
   "links": [
     {
       "rel": "self",
-      "href": "opds.json",
+      "href": "http://localhost:3000/opds.json",
       "type": "application/opds+json"
     }
   ],
@@ -19,14 +19,19 @@
       },
       "links": [
         {
-          "rel": "self",
-          "href": "units/letter-arrangement/manifest.json",
+          "rel": "http://opds-spec.org/acquisition",
+          "href": "http://localhost:3000/units/letter-arrangement/manifest.json",
           "type": "application/webpub+json"
+        },
+        {
+          "rel": "http://opds-spec.org/acquisition",
+          "href": "http://localhost:3000/games/letter-arrangement",
+          "type": "text/html"
         }
       ],
       "images": [
         {
-          "href": "logo.webp",
+          "href": "http://localhost:3000/logo.webp",
           "type": "image/webp"
         }
       ]

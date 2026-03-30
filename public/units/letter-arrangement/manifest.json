@@ -1,0 +1,31 @@
+{
+  "@context": "https://readium.org/webpub-manifest/context.jsonld",
+  "metadata": {
+    "title": "Letter Arrangement",
+    "identifier": "fidelio-letters-unit",
+    "type": "http://schema.org/EducationalActivity",
+    "author": "Learning Cloud",
+    "language": "en-US",
+    "modified": "2026-03-28T10:55:00Z"
+  },
+  "links": [
+    {
+      "rel": "self",
+      "href": "manifest.json",
+      "type": "application/webpub+json"
+    }
+  ],
+  "readingOrder": [
+    {
+      "href": "/games/letter-arrangement",
+      "type": "text/html",
+      "title": "Start Game"
+    }
+  ],
+  "resources": [
+    {
+      "href": "/logo.webp",
+      "type": "image/webp"
+    }
+  ]
+}

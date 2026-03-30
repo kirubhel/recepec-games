@@ -24,6 +24,13 @@
 .DS_Store
 *.pem
 
+# large binary artifacts / archives (e.g. Docker image exports)
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.gz
+
 # debug
 npm-debug.log*
 yarn-debug.log*
