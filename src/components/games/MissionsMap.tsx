@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Lock, Star, Trophy, ArrowLeft, Play, Hexagon } from 'lucide-react';
+import { Lock, Star, Trophy, Home, Play, Hexagon } from 'lucide-react';
 
 interface MissionsMapProps {
   title: string;
@@ -35,8 +35,9 @@ export default function MissionsMap({
         <button 
           onClick={onBack}
           className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-800 hover:bg-slate-900 hover:text-white transition-all transform hover:scale-110 active:scale-95"
+          title="Return Home"
         >
-          <ArrowLeft size={24} />
+          <Home size={24} />
         </button>
         
         <div className="text-center">
