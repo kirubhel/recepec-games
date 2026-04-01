@@ -33,7 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-slate-100 flex flex-col shadow-sm">
         {/* Brand */}
-        <Link href="/" className="p-6 pb-4 block hover:opacity-80 transition-opacity">
+        <Link href="/respect-minimal-games/" className="p-6 pb-4 block hover:opacity-80 transition-opacity">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
               <Gamepad2 size={22} />

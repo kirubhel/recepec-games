@@ -90,9 +90,9 @@ export default function Home() {
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
-            <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-[0.65rem] font-black uppercase tracking-widest border border-primary/20">
+            <Link href="/respect-minimal-games/" className="px-3 py-1 bg-primary/10 text-primary rounded-full text-[0.65rem] font-black uppercase tracking-widest border border-primary/20 hover:bg-primary hover:text-white transition-all">
               RESPECT Control Engine
-            </span>
+            </Link>
           </div>
           <h1 className="text-5xl font-black text-slate-900 tracking-tight leading-none">Management Center</h1>
           <p className="text-slate-500 font-medium font-serif italic text-xl">Central orchestration for isolated RESPECT manifestations and game assets.</p>

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Pause, Play, Clock, Trophy, ChevronLeft } from 'lucide-react';
+import { Pause, Play, Clock, Trophy, Home } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export type DifficultyLevel = 'easy' | 'medium' | 'hard';
@@ -67,10 +67,11 @@ export default function GameWrapper({
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button 
-              onClick={() => onBack ? onBack() : router.back()}
+              onClick={() => router.push('/respect-minimal-games/')}
               className="p-3 glass-button rounded-2xl text-slate-700 hover:text-primary transition-all active:scale-95"
+              title="Return Home"
             >
-              <ChevronLeft size={24} />
+              <Home size={24} />
             </button>
             <div>
               <h2 className="text-xl font-bold text-slate-800">{title}</h2>
