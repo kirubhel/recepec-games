@@ -15,6 +15,7 @@ interface GameWrapperProps {
   timeLimit?: number;
   onTimeUp?: () => void;
   score?: number;
+  onBack?: () => void;
 }
 
 export default function GameWrapper({
@@ -25,6 +26,7 @@ export default function GameWrapper({
   timeLimit,
   onTimeUp,
   score = 0,
+  onBack,
 }: GameWrapperProps) {
   const router = useRouter();
   const [isPaused, setIsPaused] = useState(false);
@@ -65,10 +67,10 @@ export default function GameWrapper({
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button 
-              onClick={() => router.back()}
-              className="p-3 glass-button rounded-2xl text-slate-700 hover:text-primary"
+              onClick={() => onBack ? onBack() : router.back()}
+              className="p-3 glass-button rounded-2xl text-slate-700 hover:text-primary transition-all active:scale-95"
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft size={24} />
             </button>
             <div>
               <h2 className="text-xl font-bold text-slate-800">{title}</h2>

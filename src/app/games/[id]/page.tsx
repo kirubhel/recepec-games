@@ -7,65 +7,125 @@ import ArrangementGame from '@/components/games/ArrangementGame';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRESPECT } from '@/components/RESPECTProvider';
 import { reportProgress } from '@/lib/respect/reporting';
+import { fetchRespectGame, parseGameData } from '@/lib/respect/api';
+import { Loader2, Gamepad2, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
 
-// Mock data for the specific "Letter Arrangement" game
-const MOCK_LEVELS: Record<DifficultyLevel, { word: string; hint: string; image: string; }[]> = {
-  easy: [
-    { word: 'CAT', hint: 'A furry pet that meows', image: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400' },
-    { word: 'DOG', hint: 'Man\'s best friend', image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400' },
-    { word: 'SUN', hint: 'The big bright star in the sky', image: 'https://images.unsplash.com/photo-1534840690959-ffc9710d868a?w=400' },
-  ],
-  medium: [
-    { word: 'BIRD', hint: 'An animal that flies', image: 'https://images.unsplash.com/photo-1444464666168-49d633b867ad?w=400' },
-    { word: 'FISH', hint: 'An animal that swims', image: 'https://images.unsplash.com/photo-1524704654690-b56c05c78a00?w=400' },
-    { word: 'TREE', hint: 'A tall plant with leaves', image: 'https://images.unsplash.com/photo-1544139159-4596d17af96d?w=400' },
-  ],
-  hard: [
-    { word: 'ORANGE', hint: 'A round citrus fruit', image: 'https://images.unsplash.com/photo-1582284540020-8acaf0382b7c?w=400' },
-    { word: 'PLANET', hint: 'A large rock in space', image: 'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=400' },
-    { word: 'ROCKET', hint: 'Used to fly to the moon', image: 'https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?w=400' },
-  ]
-};
+interface GameContent {
+  id: string;
+  word: string;
+  picture: string;
+  audio?: string;
+  hint?: string;
+  letters?: string[];
+}
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://learningcloud.et/api';
 
 export default function GamePlayPage() {
   const params = useParams();
   const id = params.id as string;
+  const router = useRouter();
   const { launchInfo } = useRESPECT();
   
+  const [game, setGame] = useState<any>(null);
   const [difficulty, setDifficulty] = useState<DifficultyLevel>('easy');
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [completedLevels, setCompletedLevels] = useState<number[]>([]);
 
-  // Load data (simulate API)
+  // Load real data from API using central utility
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-    return () => clearTimeout(timer);
+    async function load() {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const gameData = await fetchRespectGame(id);
+        
+        if (gameData) {
+          console.log(`Successfully synced mission: ${gameData.title}`);
+          setGame(gameData);
+
+          // Smart initial difficulty selection: First available difficulty
+          const easyLevels = parseGameData(gameData, 'easy');
+          const mediumLevels = parseGameData(gameData, 'medium');
+          const hardLevels = parseGameData(gameData, 'hard');
+
+          if (easyLevels.length > 0) {
+            setDifficulty('easy');
+          } else if (mediumLevels.length > 0) {
+            setDifficulty('medium');
+          } else if (hardLevels.length > 0) {
+            setDifficulty('hard');
+          } else {
+            // Default fallback if no content anywhere (handled by UI)
+            setDifficulty('easy');
+          }
+
+          // Load local progress for this mission
+          const savedProgress = localStorage.getItem(`mission_progress_${id}`);
+          if (savedProgress) {
+            setCompletedLevels(JSON.parse(savedProgress));
+          }
+        } else {
+          throw new Error('Quest not found in cloud registry or payload is corrupt.');
+        }
+      } catch (err: any) {
+        console.error('RESPECT Sync error:', err);
+        setError(err.message || 'System connection failed.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (id) load();
   }, [id]);
 
-  const currentData = MOCK_LEVELS[difficulty][currentIndex];
+  // Robustly extract activities for current difficulty via utility
+  const levels = parseGameData(game, difficulty);
+  
+  const formattedLevels: GameContent[] = levels.map((a: any) => ({
+    id: a.id || Math.random().toString(),
+    word: a.word || '',
+    picture: a.picture || '',
+    audio: a.audio || a.audio_url || '',
+    hint: a.hint,
+    letters: a.letters || []
+  }));
 
   const handleSuccess = () => {
-    const newScore = score + 50;
+    if (currentIndex === null) return;
+
+    const newScore = score + (game.points_reward || 50);
     setScore(newScore);
     
-    // Move to next level if available
+    // Mission Completed!
+    console.log('RESPECT: Level Completed! Reporting progress...');
+    
+    // Update local progress
+    const updatedCompleted = [...new Set([...completedLevels, currentIndex])];
+    setCompletedLevels(updatedCompleted);
+    localStorage.setItem(`mission_progress_${id}`, JSON.stringify(updatedCompleted));
+
     setTimeout(async () => {
-      if (currentIndex < MOCK_LEVELS[difficulty].length - 1) {
-        setCurrentIndex(currentIndex + 1);
-      } else {
-        // Completed all levels for this difficulty!
-        console.log('RESPECT: Mission Completed! Reporting progress...');
+      // Check if mission is fully complete
+      if (updatedCompleted.length >= formattedLevels.length) {
+        const maxScore = formattedLevels.length * (game.points_reward || 50);
+        
         await reportProgress(
           launchInfo, 
-          { id, title: 'Letter Arrangement' }, 
-          { score: newScore, maxScore: MOCK_LEVELS[difficulty].length * 50, success: true }
+          { id, title: game.title }, 
+          { score: newScore, maxScore, success: true }
         );
         
-        // Return to home after delay
-        setTimeout(() => window.location.href = '/', 2000);
+        setGame((prev: any) => ({ ...prev, completed: true }));
+        setTimeout(() => router.push('/'), 3000);
+      } else {
+        // Return to map
+        setCurrentIndex(null);
       }
     }, 2500);
   };
@@ -75,43 +135,124 @@ export default function GamePlayPage() {
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-10">
         <motion.div 
           animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-          className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full mb-6"
+          transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
+          className="w-20 h-20 rounded-[2rem] border-4 border-primary border-t-transparent shadow-xl mb-8"
         />
-        <p className="text-xl font-bold text-slate-800 animate-pulse">Loading Mission...</p>
+        <p className="text-xl font-black text-slate-800 uppercase tracking-widest animate-pulse">Syncing Mission Data...</p>
       </div>
     );
   }
 
+  if (error || !game) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-10 text-center">
+        <div className="w-24 h-24 bg-red-100 rounded-[3rem] flex items-center justify-center text-red-500 mb-8">
+           <AlertCircle size={48} />
+        </div>
+        <h2 className="text-3xl font-black text-slate-900 mb-4 uppercase tracking-tighter">Mission Error</h2>
+        <p className="text-slate-500 mb-10 max-w-sm font-semibold italic">{error || 'Unable to load quest payload.'}</p>
+        <Link href="/" className="px-10 py-4 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest shadow-xl shadow-slate-200">
+           Abort Mission
+        </Link>
+      </div>
+    );
+  }
+
+  if (formattedLevels.length === 0) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-10 text-center">
+        <div className="w-24 h-24 bg-amber-100 rounded-[3rem] flex items-center justify-center text-amber-500 mb-8">
+           <Gamepad2 size={48} />
+        </div>
+        <h2 className="text-3xl font-black text-slate-900 mb-4 uppercase tracking-tighter">Empty Quest</h2>
+        <p className="text-slate-500 mb-10 max-w-sm font-semibold italic">This quest has no content for the selected difficulty.</p>
+        <Link href="/" className="px-10 py-4 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest shadow-xl shadow-slate-200">
+           Return Home
+        </Link>
+      </div>
+    );
+  }
+
+  // Show Map View if no level is selected
+  if (currentIndex === null) {
+    return (
+      <MissionsMap 
+        title={game.title}
+        levels={formattedLevels}
+        difficulty={difficulty}
+        completedLevels={completedLevels}
+        onLevelSelect={(index) => setCurrentIndex(index)}
+        onBack={() => router.push('/')}
+      />
+    );
+  }
+
+  const currentData = formattedLevels[currentIndex];
+
   return (
     <GameWrapper
-      title="Letter Arrangement"
+      title={game.title}
       onDifficultyChange={(d: DifficultyLevel) => {
         setDifficulty(d);
-        setCurrentIndex(0);
+        setCurrentIndex(null); // Return to map on difficulty change
       }}
       currentDifficulty={difficulty}
       score={score}
+      timeLimit={game.time_limit}
+      onBack={() => setCurrentIndex(null)}
     >
-      <div className="w-full flex flex-col items-center">
-        {/* Progress Dots */}
-        <div className="flex gap-3 mb-12">
-          {MOCK_LEVELS[difficulty].map((_, idx) => (
-            <div 
-              key={idx}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                idx === currentIndex ? 'bg-primary w-10 scale-110' : 
-                idx < currentIndex ? 'bg-emerald-400' : 'bg-slate-200'
-              }`}
-            />
-          ))}
+      <div className="w-full flex flex-col items-center animate-in fade-in slide-in-from-bottom-5 duration-700">
+        
+        {/* Completion State Decoration */}
+        {game.completed && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="fixed inset-0 z-[60] bg-emerald-500 flex flex-col items-center justify-center p-10 text-white"
+          >
+             <div className="w-40 h-40 bg-white rounded-full flex items-center justify-center text-emerald-500 mb-8 shadow-2xl pulse-emerald">
+                <Gamepad2 size={80} />
+             </div>
+             <h2 className="text-5xl font-black uppercase tracking-tighter mb-4">Mission Complete!</h2>
+             <p className="text-xl font-bold opacity-80 mb-12">XP Rewards Reported to Learning Cloud</p>
+             <div className="text-2xl font-black py-4 px-10 bg-white/20 rounded-full">
+                Score: {score}
+             </div>
+          </motion.div>
+        )}
+
+        {/* Level Indicator */}
+        <div className="mb-6 text-center">
+            <span className="px-6 py-2 bg-slate-900 text-white rounded-full text-xs font-black uppercase tracking-widest">
+               Quest Part {currentIndex + 1}
+            </span>
         </div>
 
-        <ArrangementGame 
-          data={currentData} 
-          onSuccess={handleSuccess} 
-        />
+        {/* Dynamic Game Component Injection */}
+        {game.game_type === 4 ? (
+          <ArrangementGame 
+            data={{
+              word: currentData.word,
+              image: currentData.picture,
+              audio: currentData.audio,
+              hint: currentData.hint,
+              letters: currentData.letters
+            }} 
+            onSuccess={handleSuccess} 
+          />
+        ) : (
+          <div className="p-20 glass-card rounded-[40px] text-center max-w-md border-primary/20">
+             <AlertCircle className="w-16 h-16 text-primary mx-auto mb-6" />
+             <h3 className="text-2xl font-black text-slate-900 mb-3 uppercase">Unsupported Type</h3>
+             <p className="text-slate-500 font-bold italic">
+               Quest type {game.game_type} is not yet integrated with the player engine.
+             </p>
+          </div>
+        )}
       </div>
     </GameWrapper>
   );
 }
+
+// Sub-components used in the page
+import MissionsMap from '@/components/games/MissionsMap';

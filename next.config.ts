@@ -9,6 +9,16 @@ const nextConfig: NextConfig = {
 
   // standalone output is recommended for faster/smaller docker images
   output: 'standalone',
+
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:8080/api/:path*',
+      },
+    ];
+  },
+  skipTrailingSlashRedirect: true,
 };
 
 export default nextConfig;

@@ -15,8 +15,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Learning Cloud Games | RESPECT Launcher",
+  title: "RESPECT Games | Kokeb Learning Cloud",
   description: "High-quality educational games integrated with the RESPECT ecosystem.",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
@@ -29,7 +33,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col relative overflow-x-hidden">
+      <body 
+        className="min-h-full flex flex-col relative overflow-x-hidden"
+        suppressHydrationWarning
+      >
         {/* Premium Background Decorations */}
         <div className="fixed inset-0 -z-10 pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px]" />

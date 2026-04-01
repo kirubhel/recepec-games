@@ -20,7 +20,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, Volume2 } from 'lucide-react';
 import ConfettiEffect from './ConfettiEffect';
 
 interface SortableItemProps {
@@ -68,7 +68,9 @@ interface ArrangementGameProps {
   data: {
     word: string;
     image?: string;
+    audio?: string;
     hint?: string;
+    letters?: string[];
   };
   onSuccess?: () => void;
 }
@@ -77,6 +79,13 @@ export default function ArrangementGame({ data, onSuccess }: ArrangementGameProp
   const [letters, setLetters] = useState<{ id: string; char: string }[]>([]);
   const [showStatus, setShowStatus] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const playAudio = () => {
+    if (data.audio) {
+      const audio = new Audio(data.audio);
+      audio.play().catch(e => console.error("Audio playback failed", e));
+    }
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -87,16 +96,22 @@ export default function ArrangementGame({ data, onSuccess }: ArrangementGameProp
 
   useEffect(() => {
     // Initialize letters in random order
-    const chars = data.word.split('').map((char, index) => ({
-      id: `${char}-${index}`,
+    // Use data.letters if provided, otherwise split the word
+    const charList = (data.letters && data.letters.length > 0) 
+      ? data.letters 
+      : data.word.split('');
+
+    const chars = charList.map((char, index) => ({
+      id: `${char}-${index}-${Math.random().toString(36).substr(2, 4)}`, // Add randomness to ID to avoid collisions
       char,
     }));
     
     // Simple shuffle
     let shuffled;
+    const target = charList.join('');
     do {
       shuffled = [...chars].sort(() => Math.random() - 0.5);
-    } while (shuffled.map(l => l.char).join('') === data.word && data.word.length > 1);
+    } while (shuffled.map(l => l.char).join('') === target && charList.length > 1);
     
     setLetters(shuffled);
     setShowStatus(false);
@@ -114,7 +129,11 @@ export default function ArrangementGame({ data, onSuccess }: ArrangementGameProp
         
         // Check if correct
         const currentWord = newArr.map(l => l.char).join('');
-        if (currentWord === data.word) {
+        const targetWord = data.letters && data.letters.length > 0
+          ? data.letters.join('')
+          : data.word;
+
+        if (currentWord === targetWord) {
           setShowStatus(true);
           setIsSuccess(true);
           if (onSuccess) {
@@ -139,25 +158,42 @@ export default function ArrangementGame({ data, onSuccess }: ArrangementGameProp
         animate={{ scale: 1, opacity: 1 }}
         className="w-full max-w-3xl flex flex-col items-center"
       >
-        {/* Game Visual (Image or Placeholder) */}
-        <div className="w-64 h-64 md:w-80 md:h-80 bg-white rounded-[48px] shadow-2xl overflow-hidden mb-12 border-8 border-white p-4">
-          <div className="w-full h-full bg-slate-100 rounded-[32px] flex items-center justify-center text-8xl">
-            {data.image ? <img src={data.image} alt={data.word} className="w-full h-full object-cover rounded-[32px]" /> : '🖼️'}
+        {/* Game Visual (Image) - Only show if image exists */}
+        {data.image && data.image.trim() !== '' && (
+          <div 
+            onClick={playAudio}
+            className={`
+              w-48 h-48 md:w-64 md:h-64 bg-white rounded-[40px] shadow-xl overflow-hidden mb-8 border-4 border-white p-2 
+              relative cursor-pointer hover:scale-105 active:scale-95 transition-all group/img
+            `}
+          >
+            <div className="w-full h-full bg-slate-50 rounded-[32px] flex items-center justify-center">
+              <img src={data.image} alt={data.word} className="w-full h-full object-cover rounded-[32px]" />
+            </div>
+            {data.audio && (
+              <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary shadow-xl scale-0 group-hover/img:scale-100 transition-transform duration-300">
+                    <Volume2 size={24} fill="currentColor" />
+                 </div>
+              </div>
+            )}
           </div>
-        </div>
+        )}
 
-        {/* Hint Box */}
-        <div className="glass-card px-8 py-3 rounded-2xl mb-12 text-slate-600 font-bold tracking-widest uppercase text-sm border-primary/20 bg-primary/5">
-          {data.hint || 'Arrange the letters to spell the word'}
-        </div>
+        {/* Hint Box (Compact) */}
+        {!isSuccess && (
+          <div className="glass-card px-6 py-2 rounded-xl mb-8 text-slate-500 font-black tracking-widest uppercase text-[10px] border-primary/10 bg-primary/5">
+            {data.hint || 'Arrange the letters'}
+          </div>
+        )}
 
-        {/* Interaction Area */}
+        {/* Interaction Area (Compact) */}
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
         >
-          <div className="flex flex-wrap justify-center gap-4 md:gap-6 p-10 glass-card rounded-[40px] border-primary/10">
+          <div className="flex flex-wrap justify-center gap-3 md:gap-4 p-6 md:p-8 glass-card rounded-[32px] border-primary/5 shadow-inner">
             <SortableContext
               items={letters.map((l) => l.id)}
               strategy={horizontalListSortingStrategy}
@@ -175,8 +211,8 @@ export default function ArrangementGame({ data, onSuccess }: ArrangementGameProp
           </div>
         </DndContext>
 
-        {/* Feedback Message */}
-        <div className="h-20 mt-12 flex items-center justify-center">
+        {/* Feedback Message (Compact) */}
+        <div className="h-12 mt-6 flex items-center justify-center">
           <AnimatePresence mode="wait">
             {isSuccess && (
               <motion.div

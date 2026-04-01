@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Learning Cloud Games - RESPECT Integration
 
-## Getting Started
+Educational games for literacy and numeracy, built to follow the **RESPECT Launcher App standards**.
 
-First, run the development server:
+## 🚀 Overview
+This repository contains a suite of web-based educational games designed for seamless integration with the RESPECT Launcher. It uses **xAPI** to report progress and results directly to the launcher's LRS.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 📋 Standard Compliance
+The project implements the following RESPECT standards:
+- [x] **RESPECT Manifest**: Located at `/public/RESPECT_MANIFEST.json`.
+- [x] **OPDS 2.0 Catalog**: Located at `/public/opds.json`.
+- [x] **xAPI Statements**: Sends `completed` statements with scores and success metrics.
+- [x] **Readium Webpub Manifests**: Individual game manifests for offline caching readiness.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠 Features
+- **Zero-Login**: Uses the `auth` token provided by the RESPECT launcher for single sign-on.
+- **Offline Capable**: Assets are optimized for caching via the `libRESPECT` proxy.
+- **Multilingual**: Supports English, Amharic, and Oromo out of the box.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🕹 Existing Units (Games)
+1. **Letter Arrangement**: Arrange scrambled letters to form words. (Fully Integrated)
+2. *More games coming soon...*
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🧑‍💻 Technical Details
+- **Framework**: Next.js 15 (App Router).
+- **Styling**: Tailwind CSS & Framer Motion.
+- **API**: Axios for xAPI reporting.
+- **Discovery**: OPDS-2.0 compliant feed.
 
-## Learn More
+## 📦 Deployment
+The app is currently configured for development on `localhost:3000`. 
+Production deployment is targetted at `https://learningcloud.et/games`.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Created for the Spix Foundation / RESPECT team.*
