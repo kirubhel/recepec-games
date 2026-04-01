@@ -13,8 +13,13 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
+        // This allows prefixed links to work locally while keeping the app at the root
+        source: '/respect-minimal-games/:path((?!api/).*)',
+        destination: '/:path*',
+      },
+      {
         source: '/api/:path*',
-        destination: 'http://localhost:8080/api/:path*',
+        destination: 'https://learningcloud.et/api/:path*',
       },
     ];
   },
