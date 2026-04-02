@@ -171,12 +171,15 @@ export default function ArrangementGame({ data, onSuccess }: ArrangementGameProp
               <img src={data.image} alt={data.word} className="w-full h-full object-cover rounded-[32px]" />
             </div>
             {data.audio && (
-              <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
-                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary shadow-xl scale-0 group-hover/img:scale-100 transition-transform duration-300">
+              <div className="absolute bottom-4 right-4 z-20 flex items-center justify-center animate-bounce-subtle">
+                 <div className="w-12 h-12 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-primary shadow-xl border-4 border-primary/20 hover:scale-110 active:scale-95 transition-all duration-300">
                     <Volume2 size={24} fill="currentColor" />
                  </div>
               </div>
             )}
+            
+            {/* Visual hint that it's clickable */}
+            <div className="absolute inset-0 border-4 border-emerald-400 group-hover/img:opacity-100 opacity-0 transition-opacity rounded-[40px] pointer-events-none" />
           </div>
         )}
 

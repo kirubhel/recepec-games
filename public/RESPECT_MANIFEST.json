@@ -10,9 +10,9 @@
     "om-ET": "Tapha barsiisaa barumsaa fi herregaa."
   },
   "license": "MIT",
-  "website": "https://learningcloud.et/",
-  "icon": "http://localhost:3000/logo.webp",
-  "learningUnits": "http://localhost:3000/opds.json",
+  "website": "https://kokeb.et/respect-minimal-games/",
+  "icon": "https://kokeb.et/respect-minimal-games/logo.webp",
+  "learningUnits": "https://kokeb.et/respect-minimal-games/opds.json",
   "defaultLaunchUri": "fidelio://launch",
   "android": {
     "packageId": "world.respect.fidelio",

@@ -5,7 +5,7 @@
   "links": [
     {
       "rel": "self",
-      "href": "http://localhost:3000/opds.json",
+      "href": "https://kokeb.et/respect-minimal-games/opds.json",
       "type": "application/opds+json"
     }
   ],
@@ -20,18 +20,18 @@
       "links": [
         {
           "rel": "http://opds-spec.org/acquisition",
-          "href": "http://localhost:3000/units/letter-arrangement/manifest.json",
+          "href": "https://kokeb.et/respect-minimal-games/units/letter-arrangement/manifest.json",
           "type": "application/webpub+json"
         },
         {
           "rel": "http://opds-spec.org/acquisition",
-          "href": "http://localhost:3000/games/letter-arrangement",
+          "href": "https://kokeb.et/respect-minimal-games/games/letter-arrangement",
           "type": "text/html"
         }
       ],
       "images": [
         {
-          "href": "http://localhost:3000/logo.webp",
+          "href": "https://kokeb.et/respect-minimal-games/logo.webp",
           "type": "image/webp"
         }
       ]
