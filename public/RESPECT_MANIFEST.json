@@ -19,5 +19,9 @@
     "stores": [
       "https://play.google.com/store/apps/details?id=world.respect.fidelio"
     ]
+  },
+  "web": {
+    "url": "https://kokeb.et/respect-minimal-games/",
+    "sourceCode": "https://github.com/kirubhel/recepec-games"
   }
 }
