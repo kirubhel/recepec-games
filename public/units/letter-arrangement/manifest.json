@@ -2,9 +2,9 @@
   "@context": "https://readium.org/webpub-manifest/context.jsonld",
   "metadata": {
     "title": "Letter Arrangement",
-    "identifier": "fidelio-letters-unit",
+    "identifier": "kokebfidel-letters-unit",
     "type": "http://schema.org/EducationalActivity",
-    "author": "Learning Cloud",
+    "author": "kokeb fidel",
     "language": "en-US",
     "modified": "2026-03-28T10:55:00Z"
   },
@@ -24,8 +24,8 @@
   ],
   "resources": [
     {
-      "href": "/logo.webp",
-      "type": "image/webp"
+      "href": "/logo.png",
+      "type": "image/png"
     }
   ]
 }

@@ -1,8 +1,8 @@
 {
   "name": {
-    "en-US": "Learning Cloud Games",
-    "am-ET": "ለርኒንግ ክላውድ ጨዋታዎች",
-    "om-ET": "Tapha Barsiisota Cloud"
+    "en-US": "kokeb fidel",
+    "am-ET": "ኮከብ ፊደል",
+    "om-ET": "kokeb fidel"
   },
   "description": {
     "en-US": "Fun educational games for literacy and numeracy.",
@@ -11,13 +11,13 @@
   },
   "license": "MIT",
   "website": "https://kokeb.et/respect-minimal-games/",
-  "icon": "https://kokeb.et/respect-minimal-games/logo.webp",
+  "icon": "https://kokeb.et/respect-minimal-games/logo.png",
   "learningUnits": "https://kokeb.et/respect-minimal-games/opds.json",
-  "defaultLaunchUri": "fidelio://launch",
+  "defaultLaunchUri": "kokebfidel://launch",
   "android": {
-    "packageId": "world.respect.fidelio",
+    "packageId": "world.respect.kokebfidel",
     "stores": [
-      "https://play.google.com/store/apps/details?id=world.respect.fidelio"
+      "https://play.google.com/store/apps/details?id=world.respect.kokebfidel"
     ]
   },
   "web": {
