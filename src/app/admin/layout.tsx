@@ -54,8 +54,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </p>
           {navItems.map((item) => {
             const isActive =
-              item.href === '/admin'
-                ? pathname === '/admin'
+              item.href === '/respect-minimal-games/admin'
+                ? pathname === '/respect-minimal-games/admin'
                 : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
             return (

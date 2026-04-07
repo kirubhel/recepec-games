@@ -2,8 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /**
-   * We removed basePath to allow the app to be accessible from the root port (9014).
-   * assetPrefix is kept to ensure domain assets (under /respect-minimal-games) load correctly.
+   * We are using assetPrefix to ensure assets load from the subpath.
+   * basePath is removed because the proxy on kokeb.et is stripping the prefix.
    */
   assetPrefix: "/respect-minimal-games",
 
@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        // This allows prefixed links to work locally while keeping the app at the root
+        // This allows prefixed links to work while the app is hosted behind a proxy stripping the prefix
         source: '/respect-minimal-games/:path((?!api/).*)',
         destination: '/:path*',
       },

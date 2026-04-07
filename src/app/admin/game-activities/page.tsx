@@ -57,6 +57,7 @@ export default function GameActivitiesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCourse, setFilterCourse] = useState('all');
   const [filterGrade, setFilterGrade] = useState('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
   const [deleteTarget, setDeleteTarget] = useState<Game | null>(null);
   const [status, setStatus] = useState<'success' | 'error' | null>(null);
 
@@ -102,7 +103,8 @@ export default function GameActivitiesPage() {
       g.course_name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCourse = filterCourse === 'all' || g.course_name === filterCourse;
     const matchesGrade = filterGrade === 'all' || g.grade_name === filterGrade;
-    return matchesSearch && matchesCourse && matchesGrade;
+    const matchesStatus = filterStatus === 'all' || (filterStatus === 'active' ? g.is_active : !g.is_active);
+    return matchesSearch && matchesCourse && matchesGrade && matchesStatus;
   });
 
   return (
@@ -116,7 +118,7 @@ export default function GameActivitiesPage() {
           </p>
         </div>
         <Link
-          href="/admin/games/new"
+          href="/respect-minimal-games/admin/games/new"
           className="flex items-center gap-3 bg-slate-900 text-white px-6 py-4 rounded-3xl font-bold shadow-xl shadow-slate-300 hover:scale-105 active:scale-95 transition-all duration-200"
         >
           <Plus size={20} />
@@ -181,6 +183,18 @@ export default function GameActivitiesPage() {
             ))}
           </select>
         </div>
+        <div className="flex items-center gap-3 bg-slate-50 rounded-2xl px-4 py-3">
+          <Activity size={14} className="text-slate-400" />
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value as any)}
+            className="bg-transparent border-none focus:ring-0 text-sm font-semibold text-slate-600 cursor-pointer"
+          >
+            <option value="all">All Status</option>
+            <option value="active">Active Only</option>
+            <option value="inactive">Inactive Only</option>
+          </select>
+        </div>
       </div>
 
       {/* Game List */}
@@ -205,7 +219,7 @@ export default function GameActivitiesPage() {
             </p>
           </div>
           <Link
-            href="/admin/games/new"
+            href="/respect-minimal-games/admin/games/new"
             className="flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold text-sm hover:scale-105 transition-all shadow-lg"
           >
             <Plus size={18} /> Add Game Activity
@@ -254,6 +268,11 @@ export default function GameActivitiesPage() {
                       }`}>
                         {game.is_free ? 'Free' : 'Premium'}
                       </span>
+                      <span className={`px-2 py-0.5 rounded-full text-[0.6rem] font-black uppercase tracking-widest ${
+                        game.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'
+                      }`}>
+                        {game.is_active ? 'Active' : 'Inactive'}
+                      </span>
                     </div>
                     <h3 className="text-lg font-black text-slate-900 group-hover:text-primary transition-colors">
                       {game.title}
@@ -263,7 +282,7 @@ export default function GameActivitiesPage() {
 
                 <div className="flex items-center gap-3">
                   <Link
-                    href={`/games/${game.id}`}
+                    href={`/respect-minimal-games/games/${game.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-5 py-3 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/30"
@@ -272,8 +291,8 @@ export default function GameActivitiesPage() {
                     <span>Play Mission</span>
                   </Link>
                   <div className="h-8 w-px bg-slate-100 mx-1" />
-                  <Link
-                    href={`/admin/games/${game.id}/edit`}
+                   <Link
+                    href={`/respect-minimal-games/admin/games/${game.id}/edit`}
                     className="p-3 text-slate-400 hover:text-primary hover:bg-slate-50 rounded-xl transition-all"
                     title="Edit"
                   >

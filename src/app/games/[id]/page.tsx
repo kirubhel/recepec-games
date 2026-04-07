@@ -122,7 +122,7 @@ export default function GamePlayPage() {
         );
         
         setGame((prev: any) => ({ ...prev, completed: true }));
-        setTimeout(() => router.push('/'), 3000);
+        setTimeout(() => router.push('/respect-minimal-games/'), 3000);
       } else {
         // Return to map
         setCurrentIndex(null);
@@ -151,7 +151,7 @@ export default function GamePlayPage() {
         </div>
         <h2 className="text-3xl font-black text-slate-900 mb-4 uppercase tracking-tighter">Mission Error</h2>
         <p className="text-slate-500 mb-10 max-w-sm font-semibold italic">{error || 'Unable to load quest payload.'}</p>
-        <Link href="/" className="px-10 py-4 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest shadow-xl shadow-slate-200">
+        <Link href="/respect-minimal-games/" className="px-10 py-4 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest shadow-xl shadow-slate-200">
            Abort Mission
         </Link>
       </div>
@@ -166,7 +166,7 @@ export default function GamePlayPage() {
         </div>
         <h2 className="text-3xl font-black text-slate-900 mb-4 uppercase tracking-tighter">Empty Quest</h2>
         <p className="text-slate-500 mb-10 max-w-sm font-semibold italic">This quest has no content for the selected difficulty.</p>
-        <Link href="/" className="px-10 py-4 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest shadow-xl shadow-slate-200">
+        <Link href="/respect-minimal-games/" className="px-10 py-4 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest shadow-xl shadow-slate-200">
            Return Home
         </Link>
       </div>
@@ -182,7 +182,7 @@ export default function GamePlayPage() {
         difficulty={difficulty}
         completedLevels={completedLevels}
         onLevelSelect={(index) => setCurrentIndex(index)}
-        onBack={() => router.push('/')}
+        onBack={() => router.push('/respect-minimal-games/')}
       />
     );
   }
@@ -191,6 +191,7 @@ export default function GamePlayPage() {
 
   return (
     <GameWrapper
+      key={`${difficulty}-${currentIndex}`}
       title={game.title}
       onDifficultyChange={(d: DifficultyLevel) => {
         setDifficulty(d);
@@ -198,7 +199,7 @@ export default function GamePlayPage() {
       }}
       currentDifficulty={difficulty}
       score={score}
-      timeLimit={game.time_limit}
+      timeLimit={game.time_limit || (difficulty === 'easy' ? 180 : difficulty === 'medium' ? 120 : 60)}
       onBack={() => setCurrentIndex(null)}
     >
       <div className="w-full flex flex-col items-center animate-in fade-in slide-in-from-bottom-5 duration-700">

@@ -177,14 +177,16 @@ export default function EditGamePage({
     e.preventDefault();
     if (!form.title.trim()) { setError('Game title is required.'); return; }
     if (!form.subject_id)   { setError('Please select a subject domain.'); return; }
+    if (!form.grade_level_id) { setError('Please select a grade level.'); return; }
     if (form.game_type < 0) { setError('Please select a game type.'); return; }
 
     const payload = {
       title:                    form.title.trim(),
       description:              form.description.trim() || undefined,
       subject_id:               form.subject_id,
+      course_id:                form.subject_id,
       game_type:                form.game_type,
-      grade_level_id:           form.grade_level_id || undefined,
+      grade_level_id:           form.grade_level_id,
       difficulty_level:         form.difficulty_level,
       thumbnail_url:            form.thumbnail_url.trim() || undefined,
       instructions:             form.instructions.trim() || undefined,
@@ -215,7 +217,7 @@ export default function EditGamePage({
       const result = await res.json();
       if (result.status === 'success' || result.success) {
         setSuccess(true);
-        setTimeout(() => router.push('/admin/game-activities'), 1200);
+        setTimeout(() => router.push('/respect-minimal-games/admin/game-activities'), 1200);
       } else {
         throw new Error(result.message || 'Failed to update game');
       }
@@ -244,7 +246,7 @@ export default function EditGamePage({
       {/* Header */}
       <div className="flex items-center gap-4">
         <Link
-          href="/admin/game-activities"
+          href="/respect-minimal-games/admin/game-activities"
           className="w-10 h-10 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/30 transition-all shadow-sm"
         >
           <ArrowLeft size={18} />
@@ -265,7 +267,7 @@ export default function EditGamePage({
 
         {/* Quick preview link */}
         <Link
-          href={`/games/${resolvedParams.id}`}
+          href={`/respect-minimal-games/games/${resolvedParams.id}`}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 px-5 py-3 bg-primary/10 text-primary rounded-2xl font-bold text-sm hover:bg-primary hover:text-white transition-all"
@@ -341,15 +343,21 @@ export default function EditGamePage({
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {Object.entries(GAME_TYPES).map(([key, label]) => {
                 const typeNum = parseInt(key);
-                const isSelected = form.game_type === typeNum;
+                const isSelected = (form.game_type === typeNum);
+                // Only Arrangement (4) is selectable as per user request
+                const isDisabled = typeNum !== 4;
+                
                 return (
                   <button
                     key={key}
                     type="button"
-                    onClick={() => set('game_type', typeNum)}
+                    disabled={isDisabled}
+                    onClick={() => !isDisabled && set('game_type', typeNum)}
                     className={`py-3 px-3 rounded-2xl font-bold text-xs transition-all border-2 text-center leading-tight ${
                       isSelected
                         ? 'bg-primary border-primary text-white shadow-lg shadow-primary/30'
+                        : isDisabled
+                        ? 'bg-slate-50 border-slate-100 text-slate-200 cursor-not-allowed'
                         : 'bg-white border-slate-700/50 text-slate-400 hover:border-primary/40 hover:text-primary'
                     }`}
                   >
@@ -429,7 +437,7 @@ export default function EditGamePage({
             </Field>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <Field label="Points Reward" icon={<Star size={14} />}>
+              <Field label="Default Points Reward" icon={<Star size={14} />}>
                 <input
                   type="number"
                   min={0}
@@ -439,7 +447,7 @@ export default function EditGamePage({
                 />
               </Field>
 
-              <Field label="Time Limit (seconds)" icon={<Clock size={14} />}>
+              <Field label="Default Time Limit (sec)" icon={<Clock size={14} />}>
                 <input
                   type="number"
                   min={0}

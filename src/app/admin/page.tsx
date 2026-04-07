@@ -120,7 +120,7 @@ export default function AdminLanding() {
           </a>
           
           <Link 
-            href="/admin/games/new"
+            href="/respect-minimal-games/admin/games/new"
             className="flex items-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-[2rem] font-bold shadow-2xl shadow-slate-300 hover:scale-105 active:scale-95 transition-all"
           >
             <Plus size={20} />
@@ -211,7 +211,7 @@ export default function AdminLanding() {
                 {activeTab === 'games' && (
                   <div className="space-y-4">
                     {filteredGames.length === 0 ? (
-                      <EmptyState label="game activities" icon={Gamepad2} href="/admin/games/new" />
+                      <EmptyState label="game activities" icon={Gamepad2} href="/respect-minimal-games/admin/games/new" />
                     ) : filteredGames.map((game) => (
                       <div key={game.id} className="group bg-slate-50 p-6 rounded-[2rem] border border-transparent hover:border-primary/20 hover:bg-white hover:shadow-2xl hover:shadow-primary/5 transition-all flex items-center justify-between">
                         <div className="flex items-center gap-6">
@@ -240,20 +240,20 @@ export default function AdminLanding() {
                           }`}>
                             {game.is_free ? 'Free' : 'Premium'}
                           </span>
-                          <Link href={`/admin/games/${game.id}/edit`} className="p-3 bg-white text-slate-400 hover:text-primary rounded-xl transition-all hover:shadow-lg">
+                          <Link href={`/respect-minimal-games/admin/games/${game.id}/edit`} className="p-3 bg-white text-slate-400 hover:text-primary rounded-xl transition-all hover:shadow-lg">
                             <Settings2 size={18} />
                           </Link>
                           <button className="p-3 bg-white text-slate-400 hover:text-red-500 rounded-xl transition-all hover:shadow-lg">
                             <Trash2 size={18} />
                           </button>
-                          <Link href={`/games/${game.id}`} className="p-3 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-xl transition-all hover:shadow-lg">
+                           <Link href={`/respect-minimal-games/games/${game.id}`} className="p-3 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-xl transition-all hover:shadow-lg">
                             <Play size={18} />
                           </Link>
                         </div>
                       </div>
                     ))}
                     <Link 
-                      href="/admin/games/new"
+                      href="/respect-minimal-games/admin/games/new"
                       className="w-full py-8 rounded-[2.5rem] border-4 border-dashed border-slate-100 flex items-center justify-center gap-4 text-slate-300 hover:bg-slate-50 hover:text-primary hover:border-primary/40 transition-all font-black uppercase tracking-widest text-xs group"
                     >
                       <Plus size={24} className="group-hover:rotate-90 transition-transform duration-300" />
@@ -270,7 +270,7 @@ export default function AdminLanding() {
                     ) : filteredCourses.map((course) => (
                       <Link
                         key={course.id}
-                        href={`/admin/subjects/${course.id}`}
+                        href={`/respect-minimal-games/admin/subjects/${course.id}`}
                         className="group bg-slate-50 p-8 rounded-[2.5rem] border border-transparent hover:border-primary/20 hover:bg-white hover:shadow-2xl transition-all flex items-center justify-between"
                       >
                         <div className="flex items-center gap-6">
@@ -296,7 +296,7 @@ export default function AdminLanding() {
                     ) : filteredGrades.map((grade) => (
                       <Link
                         key={grade.id}
-                        href="/admin/grade-levels"
+                        href="/respect-minimal-games/admin/grade-levels"
                         className="group bg-slate-50 p-8 rounded-[2.5rem] border border-transparent hover:border-emerald-500/20 hover:bg-white hover:shadow-2xl transition-all flex items-center justify-between"
                       >
                         <div className="flex items-center gap-6">
@@ -315,7 +315,7 @@ export default function AdminLanding() {
                       </Link>
                     ))}
                     <Link
-                      href="/admin/grade-levels"
+                      href="/respect-minimal-games/admin/grade-levels"
                       className="p-8 rounded-[2.5rem] border-4 border-dashed border-slate-100 flex items-center justify-center gap-4 text-slate-300 hover:bg-slate-50 hover:text-emerald-500 transition-all font-black uppercase tracking-widest text-xs"
                     >
                       <Plus size={24} /> Manage Tracks

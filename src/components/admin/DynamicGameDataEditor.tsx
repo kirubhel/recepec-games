@@ -11,7 +11,10 @@ import {
   Layers,
   Sparkles,
   Gamepad2,
-  Settings2
+  Settings2,
+  UploadCloud,
+  Star,
+  Clock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -35,6 +38,11 @@ interface GameData {
     medium: DifficultyGroup[];
     hard: DifficultyGroup[];
   };
+  difficultySettings?: {
+    easy: { points: number; timeLimit: number };
+    medium: { points: number; timeLimit: number };
+    hard: { points: number; timeLimit: number };
+  };
 }
 
 interface Props {
@@ -48,6 +56,11 @@ const DEFAULT_ARRANGEMENT_DATA: GameData = {
     easy: [{ id: 'easy_1', order: 0, activities: [{ id: 'e1_1', word: '', picture: '', order: 0 }] }],
     medium: [{ id: 'medium_1', order: 0, activities: [{ id: 'm1_1', word: '', picture: '', order: 0 }] }],
     hard: [{ id: 'hard_1', order: 0, activities: [{ id: 'h1_1', word: '', picture: '', order: 0 }] }],
+  },
+  difficultySettings: {
+    easy: { points: 10, timeLimit: 60 },
+    medium: { points: 20, timeLimit: 45 },
+    hard: { points: 30, timeLimit: 30 }
   }
 };
 
@@ -61,7 +74,12 @@ export default function DynamicGameDataEditor({ gameType, gameData, onChange }: 
       setData(initial);
       onChange(initial);
     } else {
-      setData(gameData);
+      // Ensure existing data has difficultySettings
+      const merged = { ...gameData };
+      if (gameType === 4 && !merged.difficultySettings) {
+        merged.difficultySettings = { ...DEFAULT_ARRANGEMENT_DATA.difficultySettings };
+      }
+      setData(merged);
     }
   }, [gameType]);
 
@@ -72,9 +90,13 @@ export default function DynamicGameDataEditor({ gameType, gameData, onChange }: 
 
   const addActivity = (diff: 'easy' | 'medium' | 'hard') => {
     const newData = { ...data };
-    if (!newData.difficultyLevels) newData.difficultyLevels = DEFAULT_ARRANGEMENT_DATA.difficultyLevels;
+    if (!newData.difficultyLevels) newData.difficultyLevels = JSON.parse(JSON.stringify(DEFAULT_ARRANGEMENT_DATA.difficultyLevels));
     
-    // For simplicity, we just add to the first group in that difficulty
+    const diffStack = newData.difficultyLevels[diff];
+    if (!diffStack || diffStack.length === 0) {
+      newData.difficultyLevels[diff] = [{ id: `${diff}_1`, order: 0, activities: [] }];
+    }
+    
     const group = newData.difficultyLevels[diff][0];
     const newAct: ArrangementActivity = {
       id: `${diff}_${Date.now()}`,
@@ -89,24 +111,49 @@ export default function DynamicGameDataEditor({ gameType, gameData, onChange }: 
 
   const removeActivity = (diff: 'easy' | 'medium' | 'hard', id: string) => {
     const newData = { ...data };
-    const group = newData.difficultyLevels[diff][0];
-    group.activities = group.activities.filter((a: any) => a.id !== id);
+    (newData.difficultyLevels[diff] || []).forEach((group: any) => {
+      group.activities = group.activities.filter((a: any) => a.id !== id);
+    });
     updateData(newData);
   };
 
   const updateActivity = (diff: 'easy' | 'medium' | 'hard', id: string, fields: Partial<ArrangementActivity>) => {
     const newData = { ...data };
-    const group = newData.difficultyLevels[diff][0];
-    const act = group.activities.find((a: any) => a.id === id);
-    if (act) {
-      Object.assign(act, fields);
-      if (fields.word !== undefined) {
-        // Sync word to uppercase
-        act.word = fields.word.toUpperCase();
+    if (!newData.difficultyLevels) newData.difficultyLevels = JSON.parse(JSON.stringify(DEFAULT_ARRANGEMENT_DATA.difficultyLevels));
+
+    let found = false;
+    (newData.difficultyLevels[diff] || []).forEach((group: any) => {
+      const act = group.activities.find((a: any) => a.id === id);
+      if (act) {
+        Object.assign(act, fields);
+        if (fields.word !== undefined) {
+          act.word = fields.word.toUpperCase();
+        }
+        found = true;
       }
-    }
-    updateData(newData);
+    });
+
+    if (found) updateData(newData);
   };
+
+  async function handleFileUpload(diff: 'easy' | 'medium' | 'hard', id: string, file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('bucket', 'elearning-assets');
+    
+    try {
+      const res = await fetch('https://learningcloud.et/api/storage/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const result = await res.json();
+      if (result.status === 'success') {
+        updateActivity(diff, id, { picture: result.data.url });
+      }
+    } catch (err) {
+      console.error('Upload failed:', err);
+    }
+  }
 
   // Only supporting Type 4 (Arrangement) for now as requested
   if (gameType !== 4) {
@@ -123,26 +170,71 @@ export default function DynamicGameDataEditor({ gameType, gameData, onChange }: 
     );
   }
 
-  const currentActivities = data?.difficultyLevels?.[activeTab]?.[0]?.activities || [];
+  const currentActivities = (data?.difficultyLevels?.[activeTab] || []).flatMap((group: any) => group.activities || []);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
-      {/* Tab Switcher */}
-      <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit">
-        {(['easy', 'medium', 'hard'] as const).map((diff) => (
-          <button
-            key={diff}
-            type="button"
-            onClick={() => setActiveTab(diff)}
-            className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-              activeTab === diff 
-                ? 'bg-white text-slate-900 shadow-sm' 
-                : 'text-slate-400 hover:text-slate-600'
-            }`}
-          >
-            {diff}
-          </button>
-        ))}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        {/* Tab Switcher */}
+        <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit">
+          {(['easy', 'medium', 'hard'] as const).map((diff) => (
+            <button
+              key={diff}
+              type="button"
+              onClick={() => setActiveTab(diff)}
+              className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                activeTab === diff 
+                  ? 'bg-white text-slate-900 shadow-sm' 
+                  : 'text-slate-400 hover:text-slate-600'
+              }`}
+            >
+              {diff}
+            </button>
+          ))}
+        </div>
+
+        {/* Global Settings for this Difficulty */}
+        <div className="flex gap-4 items-center bg-slate-50 p-2 px-4 rounded-3xl border border-slate-100">
+           <div className="flex items-center gap-3">
+             <div className="flex flex-col items-center">
+               <span className="text-[0.6rem] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Points</span>
+               <div className="flex items-center bg-white rounded-xl px-2 border border-slate-200 focus-within:border-primary/20 transition-all">
+                  <Star size={12} className="text-amber-500 mr-1" />
+                  <input 
+                    type="number"
+                    value={data?.difficultySettings?.[activeTab]?.points || 10}
+                    onChange={(e) => {
+                      const newData = { ...data };
+                      if (!newData.difficultySettings) newData.difficultySettings = { ...DEFAULT_ARRANGEMENT_DATA.difficultySettings };
+                      newData.difficultySettings[activeTab] = { ...newData.difficultySettings[activeTab], points: parseInt(e.target.value) || 0 };
+                      updateData(newData);
+                    }}
+                    className="w-12 py-1.5 bg-transparent border-none focus:ring-0 font-black text-slate-800 text-xs"
+                  />
+               </div>
+             </div>
+             
+             <div className="w-px h-8 bg-slate-200" />
+
+             <div className="flex flex-col items-center">
+               <span className="text-[0.6rem] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Seconds</span>
+               <div className="flex items-center bg-white rounded-xl px-2 border border-slate-200 focus-within:border-primary/20 transition-all">
+                  <Clock size={12} className="text-primary mr-1" />
+                  <input 
+                    type="number"
+                    value={data?.difficultySettings?.[activeTab]?.timeLimit || 60}
+                    onChange={(e) => {
+                      const newData = { ...data };
+                      if (!newData.difficultySettings) newData.difficultySettings = { ...DEFAULT_ARRANGEMENT_DATA.difficultySettings };
+                      newData.difficultySettings[activeTab] = { ...newData.difficultySettings[activeTab], timeLimit: parseInt(e.target.value) || 0 };
+                      updateData(newData);
+                    }}
+                    className="w-12 py-1.5 bg-transparent border-none focus:ring-0 font-black text-slate-800 text-xs"
+                  />
+               </div>
+             </div>
+           </div>
+        </div>
       </div>
 
       {/* Activities List */}
@@ -163,23 +255,35 @@ export default function DynamicGameDataEditor({ gameType, gameData, onChange }: 
               </div>
 
               {/* Image Input Container */}
-              <div className="w-32 h-32 bg-slate-50 rounded-3xl overflow-hidden flex-shrink-0 border-2 border-transparent group-focus-within:border-primary/20 transition-all relative group/img">
+              <div className="w-32 h-32 bg-slate-50 rounded-3xl overflow-hidden flex-shrink-0 border-2 border-transparent group-focus-within:border-primary/20 transition-all relative group/img shadow-inner">
                 {act.picture ? (
                   <img src={act.picture} alt="Preview" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-300">
-                    <ImageIcon size={24} />
-                    <span className="text-[0.6rem] font-black uppercase tracking-tighter">No Image</span>
+                    <UploadCloud size={24} />
+                    <span className="text-[0.6rem] font-black uppercase tracking-tighter">Upload</span>
                   </div>
                 )}
-                {/* Image Overlay Input */}
-                <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center p-2">
+                {/* Upload Overlay */}
+                <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover/img:opacity-100 transition-opacity flex flex-col items-center justify-center p-4">
+                   <button 
+                     type="button" 
+                     className="bg-white text-slate-900 px-3 py-1.5 rounded-lg text-[0.6rem] font-black uppercase tracking-widest mb-2 shadow-xl"
+                   >
+                     New Image
+                   </button>
+                   <input 
+                     type="file"
+                     className="absolute inset-0 opacity-0 cursor-pointer"
+                     onChange={(e) => e.target.files?.[0] && handleFileUpload(activeTab, act.id, e.target.files[0])}
+                   />
                    <input 
                      type="text"
-                     placeholder="Image URL..."
+                     placeholder="Or URL..."
                      value={act.picture}
                      onChange={(e) => updateActivity(activeTab, act.id, { picture: e.target.value })}
-                     className="w-full bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1 text-[0.6rem] font-bold outline-none"
+                     onClick={(e) => e.stopPropagation()}
+                     className="w-full bg-white/20 backdrop-blur-sm border border-white/20 rounded-lg px-2 py-1 text-[0.6rem] font-bold outline-none text-white placeholder:text-white/50"
                    />
                 </div>
               </div>

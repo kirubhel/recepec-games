@@ -236,7 +236,7 @@ export default function SubjectsPage() {
           {filtered.map((course) => (
             <Link
               key={course.id}
-              href={`/admin/subjects/${course.id}`}
+              href={`/respect-minimal-games/admin/subjects/${course.id}`}
               className="group block bg-white rounded-[2.5rem] p-4 border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-slate-200 hover:-translate-y-2 transition-all duration-300 relative"
             >
               {/* Edit / Delete actions */}

@@ -196,7 +196,7 @@ export default function GameContentManager({ params }: { params: Promise<{ id: s
       <div className="flex items-center justify-between bg-white p-8 rounded-[3rem] border border-slate-100 shadow-xl shadow-slate-200/50">
         <div className="flex items-center gap-8">
           <Link 
-            href="/admin/subjects" 
+            href="/respect-minimal-games/admin/subjects" 
             className="w-14 h-14 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary/10 transition-all active:scale-90"
           >
             <ArrowLeft size={24} />
