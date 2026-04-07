@@ -6,7 +6,7 @@ export interface Game {
   title: string;
   description?: string;
   game_type: number;
-  subject_id?: string;
+  course_id?: string;
   grade_level_id?: string;
   difficulty_level?: number;
   game_data?: any;

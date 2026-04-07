@@ -141,7 +141,7 @@ export default function EditGamePage({
           setForm({
             title:                    game.title              ?? '',
             description:              game.description        ?? '',
-            subject_id:               game.subject_id         ?? (game as any).course_id ?? '',
+            subject_id:               game.course_id          || (game as any).subject_id || '',
             game_type:                game.game_type          ?? -1,
             grade_level_id:           game.grade_level_id     ?? '',
             difficulty_level:         game.difficulty_level   ?? 1,
