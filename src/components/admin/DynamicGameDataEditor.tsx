@@ -75,11 +75,14 @@ export default function DynamicGameDataEditor({ gameType, gameData, onChange }: 
       onChange(initial);
     } else {
       // Ensure existing data has difficultySettings
-      const merged = { ...gameData };
+      let merged = { ...gameData };
+      let changed = false;
       if (gameType === 4 && !merged.difficultySettings) {
-        merged.difficultySettings = { ...DEFAULT_ARRANGEMENT_DATA.difficultySettings };
+        merged.difficultySettings = JSON.parse(JSON.stringify(DEFAULT_ARRANGEMENT_DATA.difficultySettings));
+        changed = true;
       }
       setData(merged);
+      if (changed) onChange(merged);
     }
   }, [gameType]);
 

@@ -157,7 +157,6 @@ export default function NewGamePage() {
       course_id:               form.subject_id,
       game_type:               form.game_type,
       grade_level_id:          form.grade_level_id,
-      difficulty_level:        form.difficulty_level,
       thumbnail_url:           form.thumbnail_url.trim() || undefined,
       instructions:            form.instructions.trim() || undefined,
       points_reward:           form.points_reward,
@@ -328,26 +327,6 @@ export default function NewGamePage() {
                 ✓ Selected: <span className="font-black">{GAME_TYPES[form.game_type]}</span> (type {form.game_type})
               </p>
             )}
-          </div>
-        </Section>
-
-        {/* ── Section 3: Difficulty ── */}
-        <Section icon={<Star size={20} />} title="Difficulty Level" accent="amber">
-          <div className="flex gap-4">
-            {DIFFICULTIES.map((d) => (
-              <button
-                key={d.value}
-                type="button"
-                onClick={() => set('difficulty_level', d.value)}
-                className={`flex-1 py-4 rounded-2xl font-black text-sm transition-all border-2 ${
-                  form.difficulty_level === d.value
-                    ? `${d.color} border-transparent text-white shadow-lg`
-                    : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
-                }`}
-              >
-                {d.label}
-              </button>
-            ))}
           </div>
         </Section>
 
