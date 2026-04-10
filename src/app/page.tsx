@@ -233,30 +233,27 @@ export default function Home() {
                            )}
                         </div>
                         
-                        {/* Gradient Overlay for Text Readability */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/40 to-black/90" />
-  
-                        {/* Top Badges */}
-                        <div className="absolute top-6 left-6 z-10 flex items-center gap-2 bg-amber-400 text-white px-4 py-2 rounded-2xl font-black text-xs shadow-xl shadow-amber-400/20">
-                          <Star size={16} fill="currentColor" />
-                          <span>{stats.stars}</span>
-                        </div>
-  
-                        <div className={`absolute top-6 right-6 z-10 p-2 rounded-2xl border border-white/30 backdrop-blur-md transition-all duration-500 
-                          ${stats.hasStarted ? 'bg-emerald-500/80 text-white scale-110 shadow-lg shadow-emerald-500/30' : 'bg-white/20 text-white/40'}`}>
-                          <CheckCircle2 size={24} />
-                        </div>
-  
-                        {/* Bottom Info */}
+                         {/* Top Badges */}
+                         <div className="absolute top-6 left-6 z-10 flex items-center gap-2 bg-amber-400 text-white px-4 py-2 rounded-2xl font-black text-xs shadow-xl shadow-amber-400/20 border-2 border-white/50">
+                           <Star size={16} fill="currentColor" />
+                           <span>{stats.stars}</span>
+                         </div>
+   
+                         <div className={`absolute top-6 right-6 z-10 p-2 rounded-2xl border border-white/50 backdrop-blur-md transition-all duration-500 shadow-xl
+                           ${stats.hasStarted ? 'bg-emerald-500 text-white scale-110 shadow-emerald-500/30' : 'bg-white/40 text-white/60'}`}>
+                           <CheckCircle2 size={24} />
+                         </div>
+
+                         {/* Bottom Info */}
                         <div className="absolute inset-x-0 bottom-0 p-8 flex flex-col justify-end">
-                          <span className="text-[0.65rem] font-black uppercase tracking-[0.2em] text-primary mb-1 drop-shadow-lg">Mission Ready</span>
-                          <h3 className="text-2xl font-black text-white leading-none mb-3 group-hover:translate-x-1 transition-transform drop-shadow-xl">{game.title}</h3>
+                          <span className="text-[0.65rem] font-black uppercase tracking-[0.2em] text-primary mb-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]">Mission Ready</span>
+                          <h3 className="text-2xl font-black text-white leading-none mb-3 group-hover:translate-x-1 transition-transform drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">{game.title}</h3>
                           <div className="flex items-center gap-3">
-                             <div className="flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-lg text-white/90 text-[0.6rem] font-bold uppercase tracking-widest border border-white/10">
+                             <div className="flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-lg text-white/90 text-[0.6rem] font-bold uppercase tracking-widest border border-white/10 shadow-lg">
                                 <Trophy size={12} className="text-amber-400" />
                                 <span>BEST: {stats.stars}</span>
                              </div>
-                             <div className="h-1.5 flex-1 bg-white/20 rounded-full overflow-hidden border border-white/5">
+                             <div className="h-1.5 flex-1 bg-white/20 rounded-full overflow-hidden border border-white/5 shadow-inner">
                                 <motion.div 
                                   initial={{ width: 0 }}
                                   animate={{ width: `${stats.progress}%` }}
