@@ -5,21 +5,22 @@
   --font-mono: var(--font-geist-mono);
   --color-primary: #51A2FF;
   --color-primary-hover: #3b82f6;
+  --color-secondary: #4FB5FF;
 }
 
 :root {
-  --background: #f8fafc;
+  --background: #f0f7ff;
   --foreground: #0f172a;
+  --header-height: 80px;
+  --nav-height: 90px;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(81, 162, 255, 0.1) 0, transparent 50%),
-    radial-gradient(at 50% 0%, rgba(92, 127, 216, 0.1) 0, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(81, 162, 255, 0.1) 0, transparent 50%);
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
 .glass-card {
@@ -30,14 +31,18 @@ body {
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 }
 
-.glass-button {
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.2s ease-in-out;
+.native-gradient {
+  background: linear-gradient(180deg, #64B5FF 0%, #F0F7FF 100%);
 }
 
-.glass-button:hover {
-  background: rgba(255, 255, 255, 0.6);
+.card-overlay {
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.8) 100%);
+}
+
+.safe-bottom {
+  padding-bottom: calc(var(--nav-height) + 20px);
+}
+
+.safe-top {
+  padding-top: calc(var(--header-height) + 20px);
 }

@@ -15,41 +15,32 @@ export default function ConfettiEffect({ active, onComplete }: ConfettiEffectPro
     if (active && !hasRun.current) {
       hasRun.current = true;
       
-      const duration = 3 * 1000;
-      const animationEnd = Date.now() + duration;
-      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-      const randomInRange = (min: number, max: number) => {
-        return Math.random() * (max - min) + min;
+      const count = 200;
+      const defaults = {
+        origin: { y: 0.7 }
       };
 
-      const interval: any = setInterval(function() {
-        const timeLeft = animationEnd - Date.now();
+      function fire(particleRatio: number, opts: any) {
+        confetti(Object.assign({}, defaults, opts, {
+          particleCount: Math.floor(count * particleRatio)
+        }));
+      }
 
-        if (timeLeft <= 0) {
-          clearInterval(interval);
-          if (onComplete) onComplete();
-          return;
-        }
+      // Massive Multi-Stage Burst (The "Throw")
+      fire(0.25, { spread: 26, startVelocity: 55 });
+      fire(0.2, { spread: 60 });
+      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+      fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+      fire(0.1, { spread: 120, startVelocity: 45 });
 
-        const particleCount = 50 * (timeLeft / duration);
-        
-        confetti({
-          ...defaults,
-          particleCount,
-          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-        });
-        
-        confetti({
-          ...defaults,
-          particleCount,
-          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-        });
-      }, 250);
+      // Secondary delay "throw"
+      setTimeout(() => {
+        fire(0.2, { spread: 60, startVelocity: 45, origin: { y: 0.8 } });
+      }, 300);
 
-      return () => {
-        clearInterval(interval);
-      };
+      if (onComplete) {
+        setTimeout(onComplete, 4000);
+      }
     } else if (!active) {
       hasRun.current = false;
     }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import GameWrapper, { DifficultyLevel } from '@/components/games/GameWrapper';
 import ArrangementGame from '@/components/games/ArrangementGame';
@@ -8,7 +8,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRESPECT } from '@/components/RESPECTProvider';
 import { reportProgress } from '@/lib/respect/reporting';
 import { fetchRespectGame, parseGameData } from '@/lib/respect/api';
-import { Loader2, Gamepad2, AlertCircle } from 'lucide-react';
+import { Loader2, Gamepad2, AlertCircle, Star } from 'lucide-react';
+import ConfettiEffect from '@/components/games/ConfettiEffect';
 import Link from 'next/link';
 
 interface GameContent {
@@ -34,7 +35,22 @@ export default function GamePlayPage() {
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [completedLevels, setCompletedLevels] = useState<number[]>([]);
+  const [completedLevels, setCompletedLevels] = useState<Record<DifficultyLevel, Record<number, number>>>({
+    easy: {},
+    medium: {},
+    hard: {}
+  });
+
+  const gameRef = useRef<any>(null);
+  const [levelAids, setLevelAids] = useState({ hintUsed: false, retryCount: 0 });
+  const [levelComplete, setLevelComplete] = useState(false);
+  const [starsAchieved, setStarsAchieved] = useState(0);
+
+  // Reset level aids on level change
+  useEffect(() => {
+    setLevelAids({ hintUsed: false, retryCount: 0 });
+    setLevelComplete(false);
+  }, [currentIndex, difficulty]);
 
   // Load real data from API using central utility
   useEffect(() => {
@@ -49,42 +65,91 @@ export default function GamePlayPage() {
           console.log(`Successfully synced mission: ${gameData.title}`);
           setGame(gameData);
 
-          // Smart initial difficulty selection: First available difficulty
+          // Smart initial difficulty selection
           const easyLevels = parseGameData(gameData, 'easy');
           const mediumLevels = parseGameData(gameData, 'medium');
           const hardLevels = parseGameData(gameData, 'hard');
 
-          if (easyLevels.length > 0) {
-            setDifficulty('easy');
-          } else if (mediumLevels.length > 0) {
-            setDifficulty('medium');
-          } else if (hardLevels.length > 0) {
-            setDifficulty('hard');
-          } else {
-            // Default fallback if no content anywhere (handled by UI)
-            setDifficulty('easy');
-          }
+          if (easyLevels.length > 0) setDifficulty('easy');
+          else if (mediumLevels.length > 0) setDifficulty('medium');
+          else if (hardLevels.length > 0) setDifficulty('hard');
 
-          // Load local progress for this mission
-          const savedProgress = localStorage.getItem(`mission_progress_${id}`);
+          // Load local progress
+          const savedProgress = localStorage.getItem(`mission_progress_${id}_v3`);
           if (savedProgress) {
             setCompletedLevels(JSON.parse(savedProgress));
+          } else {
+            // Migration from v2
+            const v2 = localStorage.getItem(`mission_progress_${id}_v2`);
+            if (v2) {
+              const old = JSON.parse(v2);
+              const migrated: any = { easy: {}, medium: {}, hard: {} };
+              Object.keys(old).forEach((diff) => {
+                old[diff].forEach((idx: number) => {
+                  migrated[diff][idx] = 3; // Default 3 stars for migrated
+                });
+              });
+              setCompletedLevels(migrated);
+            }
           }
-        } else {
-          throw new Error('Quest not found in cloud registry or payload is corrupt.');
         }
       } catch (err: any) {
-        console.error('RESPECT Sync error:', err);
         setError(err.message || 'System connection failed.');
       } finally {
         setLoading(false);
       }
     }
-
     if (id) load();
   }, [id]);
 
-  // Robustly extract activities for current difficulty via utility
+  const handleSuccess = () => {
+    if (currentIndex === null) return;
+
+    const newScore = score + (game.points_reward || 50);
+    setScore(newScore);
+    
+    // Performance-based stars: 3 max, -1 per hint, -1 per retry
+    const stars = Math.max(3 - (levelAids.hintUsed ? 1 : 0) - levelAids.retryCount, 1);
+    setStarsAchieved(stars);
+    
+    const updatedForDiff = {
+      ...(completedLevels[difficulty] || {}),
+      [currentIndex]: stars
+    };
+    const newCompleted = {
+      ...completedLevels,
+      [difficulty]: updatedForDiff
+    };
+    
+    setCompletedLevels(newCompleted);
+    localStorage.setItem(`mission_progress_${id}_v3`, JSON.stringify(newCompleted));
+    setLevelComplete(true);
+
+    // Handle Reporter
+    const currentLevels = parseGameData(game, difficulty);
+    if (currentIndex + 1 >= currentLevels.length) {
+      if (Object.keys(updatedForDiff).length >= currentLevels.length) {
+        reportProgress(
+          launchInfo, 
+          { id, title: game.title }, 
+          { score: newScore, maxScore: currentLevels.length * 50, success: true }
+        );
+      }
+    }
+  };
+
+  const handleNextPart = () => {
+    const currentLevels = parseGameData(game, difficulty);
+    const nextIndex = (currentIndex || 0) + 1;
+
+    if (nextIndex < currentLevels.length) {
+      setCurrentIndex(nextIndex);
+    } else {
+      setCurrentIndex(null);
+    }
+    setLevelComplete(false);
+  };
+
   const levels = parseGameData(game, difficulty);
   
   const formattedLevels: GameContent[] = levels.map((a: any) => ({
@@ -95,40 +160,6 @@ export default function GamePlayPage() {
     hint: a.hint,
     letters: a.letters || []
   }));
-
-  const handleSuccess = () => {
-    if (currentIndex === null) return;
-
-    const newScore = score + (game.points_reward || 50);
-    setScore(newScore);
-    
-    // Mission Completed!
-    console.log('RESPECT: Level Completed! Reporting progress...');
-    
-    // Update local progress
-    const updatedCompleted = [...new Set([...completedLevels, currentIndex])];
-    setCompletedLevels(updatedCompleted);
-    localStorage.setItem(`mission_progress_${id}`, JSON.stringify(updatedCompleted));
-
-    setTimeout(async () => {
-      // Check if mission is fully complete
-      if (updatedCompleted.length >= formattedLevels.length) {
-        const maxScore = formattedLevels.length * (game.points_reward || 50);
-        
-        await reportProgress(
-          launchInfo, 
-          { id, title: game.title }, 
-          { score: newScore, maxScore, success: true }
-        );
-        
-        setGame((prev: any) => ({ ...prev, completed: true }));
-        setTimeout(() => router.push('/respect-minimal-games/'), 3000);
-      } else {
-        // Return to map
-        setCurrentIndex(null);
-      }
-    }, 2500);
-  };
 
   if (loading) {
     return (
@@ -178,16 +209,18 @@ export default function GamePlayPage() {
     return (
       <MissionsMap 
         title={game.title}
-        levels={formattedLevels}
-        difficulty={difficulty}
-        completedLevels={completedLevels}
-        onLevelSelect={(index) => setCurrentIndex(index)}
+        game={game}
+        completedProgress={completedLevels}
+        onLevelSelect={(diff, index) => {
+          setDifficulty(diff);
+          setCurrentIndex(index);
+        }}
         onBack={() => router.push('/respect-minimal-games/')}
       />
     );
   }
 
-  const currentData = formattedLevels[currentIndex];
+  const currentData = formattedLevels[currentIndex as number];
 
   return (
     <GameWrapper
@@ -201,10 +234,68 @@ export default function GamePlayPage() {
       score={score}
       timeLimit={game.time_limit || (difficulty === 'easy' ? 180 : difficulty === 'medium' ? 120 : 60)}
       onBack={() => setCurrentIndex(null)}
+      onHint={() => {
+        if (!levelAids.hintUsed) {
+          setLevelAids(prev => ({ ...prev, hintUsed: true }));
+          gameRef.current?.handleHint?.();
+        }
+      }}
+      onRetry={() => {
+        setLevelAids(prev => ({ ...prev, retryCount: prev.retryCount + 1 }));
+        gameRef.current?.handleRetry?.();
+      }}
     >
       <div className="w-full flex flex-col items-center animate-in fade-in slide-in-from-bottom-5 duration-700">
         
-        {/* Completion State Decoration */}
+        {/* Success Overlay with Stars and Next Button */}
+        <AnimatePresence>
+          {levelComplete && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-xl flex items-center justify-center p-6"
+            >
+              <ConfettiEffect active={true} />
+              <motion.div 
+                initial={{ scale: 0.8, y: 50, rotate: -2 }}
+                animate={{ scale: 1, y: 0, rotate: 0 }}
+                className="bg-white rounded-[50px] p-12 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] flex flex-col items-center max-w-sm w-full text-center border-b-[12px] border-slate-100 relative"
+              >
+                 <div className="absolute -top-16 w-32 h-32 bg-amber-400 rounded-full flex items-center justify-center shadow-xl border-8 border-white">
+                    <Star size={64} className="text-white fill-white" />
+                 </div>
+
+                 <div className="flex gap-3 mb-8 mt-16 items-end">
+                    {[1, 2, 3].map((s) => (
+                      <motion.div
+                        key={s}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.2 + (s * 0.1), type: 'spring' }}
+                      >
+                        <Star 
+                          size={s === 2 ? 84 : 64} 
+                          className={`${starsAchieved >= s ? 'text-amber-400 fill-amber-400 drop-shadow-lg' : 'text-slate-100'} ${s === 2 ? '-translate-y-4' : ''}`} 
+                        />
+                      </motion.div>
+                    ))}
+                 </div>
+                 <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter mb-2">Excellent!</h2>
+                 <p className="text-slate-400 font-bold mb-10 italic tracking-tight">Quest Part {(currentIndex || 0) + 1} Complete</p>
+                 
+                 <button 
+                   onClick={handleNextPart}
+                   className="w-full py-6 bg-primary text-white rounded-[2rem] font-black text-xl uppercase tracking-widest shadow-2xl shadow-primary/40 hover:scale-105 active:scale-95 transition-all outline-none"
+                 >
+                    Next Part
+                 </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Completion State Decoration (Full Mission) */}
         {game.completed && (
           <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
@@ -232,6 +323,7 @@ export default function GamePlayPage() {
         {/* Dynamic Game Component Injection */}
         {game.game_type === 4 ? (
           <ArrangementGame 
+            ref={gameRef}
             data={{
               word: currentData.word,
               image: currentData.picture,
