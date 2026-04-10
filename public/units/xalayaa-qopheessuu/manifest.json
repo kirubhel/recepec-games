@@ -1,11 +1,11 @@
 {
   "@context": "https://readium.org/webpub-manifest/context.jsonld",
   "metadata": {
-    "title": "Letter Arrangement",
-    "identifier": "kokebfidel-letters-unit",
+    "title": "xalayaa qopheessuu",
+    "identifier": "kokebfidel-xalayaa-unit",
     "type": "http://schema.org/EducationalActivity",
     "author": "Learning Cloud",
-    "language": "en-US",
+    "language": "om-ET",
     "modified": "2026-04-10T10:00:00Z"
   },
   "links": [
@@ -17,7 +17,7 @@
   ],
   "readingOrder": [
     {
-      "href": "/respect-minimal-games/games/d6d2cf62-23b8-4c2a-8d36-0f3b53a3cb93",
+      "href": "/respect-minimal-games/games/d5630ff2-daba-474c-9700-edc13915dcee",
       "type": "text/html",
       "title": "Start Game"
     }

@@ -1,11 +1,11 @@
 {
   "@context": "https://readium.org/webpub-manifest/context.jsonld",
   "metadata": {
-    "title": "Letter Arrangement",
-    "identifier": "kokebfidel-letters-unit",
+    "title": "ከ ሀ - ፐ",
+    "identifier": "kokebfidel-amharic-unit",
     "type": "http://schema.org/EducationalActivity",
     "author": "Learning Cloud",
-    "language": "en-US",
+    "language": "am-ET",
     "modified": "2026-04-10T10:00:00Z"
   },
   "links": [
@@ -17,7 +17,7 @@
   ],
   "readingOrder": [
     {
-      "href": "/respect-minimal-games/games/d6d2cf62-23b8-4c2a-8d36-0f3b53a3cb93",
+      "href": "/respect-minimal-games/games/92e6f84d-170d-4abb-b121-1e5b578ff737",
       "type": "text/html",
       "title": "Start Game"
     }
