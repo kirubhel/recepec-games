@@ -1,0 +1,36 @@
+{
+  "@context": "https://readium.org/webpub-manifest/context.jsonld",
+  "metadata": {
+    "title": "Letter Arrangement",
+    "identifier": "https://kokeb.et/respect-minimal-games/units/en-letter-arrangement",
+    "type": "http://schema.org/EducationalActivity",
+    "author": "Learning Cloud",
+    "language": "en-US",
+    "modified": "2026-04-10T16:30:00Z"
+  },
+  "links": [
+    {
+      "rel": "self",
+      "href": "https://kokeb.et/respect-minimal-games/units/en-letter-arrangement/manifest.json",
+      "type": "application/webpub+json"
+    },
+    {
+      "rel": "http://opds-spec.org/acquisition",
+      "href": "https://kokeb.et/respect-minimal-games/games/d6d2cf62-23b8-4c2a-8d36-0f3b53a3cb93",
+      "type": "text/html"
+    }
+  ],
+  "readingOrder": [
+    {
+      "href": "https://kokeb.et/respect-minimal-games/games/d6d2cf62-23b8-4c2a-8d36-0f3b53a3cb93",
+      "type": "text/html",
+      "title": "Letter Arrangement - Start"
+    }
+  ],
+  "images": [
+    {
+      "href": "https://learningcloud.et/api/storage/proxy?bucket=english&objectName=LETTER%20.png",
+      "type": "image/png"
+    }
+  ]
+}

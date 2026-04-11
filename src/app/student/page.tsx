@@ -15,10 +15,12 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRESPECT } from '@/components/RESPECTProvider';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://learningcloud.et/api';
 
 export default function StudentHome() {
+  const { localUser, isAuthenticating } = useRESPECT();
   const [loading, setLoading] = useState(true);
   const [games, setGames] = useState<any[]>([]);
   const [search, setSearch] = useState('');
@@ -56,7 +58,9 @@ export default function StudentHome() {
                 <Trophy size={24} />
              </div>
              <div>
-                <h1 className="text-xl font-black text-slate-900 tracking-tight leading-none mb-1">Student Portal</h1>
+                <h1 className="text-xl font-black text-slate-900 tracking-tight leading-none mb-1">
+                    {isAuthenticating ? 'Authenticating...' : localUser ? `Hi, ${localUser.first_name}` : 'Student Portal'}
+                </h1>
                 <p className="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest">Kokeb Learning Cloud</p>
              </div>
           </div>
@@ -66,7 +70,11 @@ export default function StudentHome() {
                 <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
                 <span className="text-sm font-black text-slate-700">1,240 XP</span>
              </div>
-             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-emerald-400 border-2 border-white shadow-lg" />
+             {localUser?.photo_url ? (
+                <img src={localUser.photo_url} className="w-10 h-10 rounded-full border-2 border-white shadow-lg object-cover" alt="" />
+             ) : (
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-emerald-400 border-2 border-white shadow-lg" />
+             )}
           </div>
         </div>
       </nav>

@@ -1,0 +1,36 @@
+{
+  "@context": "https://readium.org/webpub-manifest/context.jsonld",
+  "metadata": {
+    "title": "ከ ሀ - ፐ",
+    "identifier": "https://kokeb.et/respect-minimal-games/units/am-letters",
+    "type": "http://schema.org/EducationalActivity",
+    "author": "Learning Cloud",
+    "language": "am-ET",
+    "modified": "2026-04-10T16:30:00Z"
+  },
+  "links": [
+    {
+      "rel": "self",
+      "href": "https://kokeb.et/respect-minimal-games/units/am-letters/manifest.json",
+      "type": "application/webpub+json"
+    },
+    {
+      "rel": "http://opds-spec.org/acquisition",
+      "href": "https://kokeb.et/respect-minimal-games/games/92e6f84d-170d-4abb-b121-1e5b578ff737",
+      "type": "text/html"
+    }
+  ],
+  "readingOrder": [
+    {
+      "href": "https://kokeb.et/respect-minimal-games/games/92e6f84d-170d-4abb-b121-1e5b578ff737",
+      "type": "text/html",
+      "title": "ከ ሀ - ፐ - Start"
+    }
+  ],
+  "images": [
+    {
+      "href": "https://learningcloud.et/api/storage/proxy?bucket=gameactivity&objectName=%E1%8A%A8+%E1%88%80+-+%E1%8D%90.png",
+      "type": "image/png"
+    }
+  ]
+}

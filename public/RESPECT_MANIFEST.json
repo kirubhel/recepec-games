@@ -1,27 +1,12 @@
 {
-  "name": {
-    "en-US": "kokeb fidel",
-    "am-ET": "ኮከብ ፊደል",
-    "om-ET": "kokeb fidel"
-  },
-  "description": {
-    "en-US": "Fun educational games for literacy and numeracy.",
-    "am-ET": "ለልጆች የሚሆኑ አዝናኝ እና አስተማሪ ጨዋታዎች።",
-    "om-ET": "Tapha barsiisaa barumsaa fi herregaa."
-  },
+  "id": "et.kokeb.fidel.main",
+  "name": { "en-US": "kokeb fidel" },
+  "description": { "en-US": "Fun educational games for literacy and numeracy." },
   "license": "MIT",
-  "website": "https://kokeb.et/respect-minimal-games/",
   "icon": "https://kokeb.et/respect-minimal-games/logo.png",
   "learningUnits": "https://kokeb.et/respect-minimal-games/opds.json",
-  "defaultLaunchUri": "kokebfidel://launch",
-  "android": {
-    "packageId": "world.respect.kokebfidel",
-    "stores": [
-      "https://play.google.com/store/apps/details?id=world.respect.kokebfidel"
-    ]
-  },
+  "defaultLaunchUri": "https://kokeb.et/respect-minimal-games/",
   "web": {
-    "url": "https://kokeb.et/respect-minimal-games/",
-    "sourceCode": "https://github.com/kirubhel/recepec-games"
+    "url": "https://kokeb.et/respect-minimal-games/"
   }
 }

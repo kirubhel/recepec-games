@@ -27,9 +27,10 @@ interface SortableItemProps {
   letter: string;
   isCorrect: boolean;
   showStatus: boolean;
+  sizeClass: string;
 }
 
-function SortableItem({ id, letter, isCorrect, showStatus }: SortableItemProps) {
+function SortableItem({ id, letter, isCorrect, showStatus, sizeClass }: SortableItemProps) {
   const {
     attributes,
     listeners,
@@ -51,7 +52,7 @@ function SortableItem({ id, letter, isCorrect, showStatus }: SortableItemProps) 
       {...attributes}
       {...listeners}
       className={`
-        w-16 h-16 md:w-20 md:h-20 flex items-center justify-center rounded-2xl md:rounded-3xl text-3xl md:text-4xl font-black shadow-lg cursor-grab active:cursor-grabbing transition-all
+        ${sizeClass} flex items-center justify-center rounded-2xl md:rounded-3xl font-black shadow-lg cursor-grab active:cursor-grabbing transition-all
         ${isDragging ? 'z-50 opacity-50 scale-110 rotate-3 shadow-2xl ring-4 ring-primary/20' : 'opacity-100'}
         ${!showStatus ? 'bg-white text-slate-800 border-2 border-slate-200' : 
           isCorrect ? 'bg-emerald-500 text-white border-none shadow-emerald-200/50 scale-105' : 
@@ -171,16 +172,6 @@ const ArrangementGame = forwardRef((props: ArrangementGameProps, ref) => {
       </AnimatePresence>
 
       <motion.div 
-        key={`${data.word}-title`}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-8 text-center"
-      >
-        <span className="text-sm font-black text-primary/40 uppercase tracking-[0.3em] block mb-2">Build the word</span>
-        <h1 className="text-4xl md:text-5xl font-black text-slate-900 uppercase tracking-tighter">{data.word}</h1>
-      </motion.div>
-
-      <motion.div 
         key={`${data.word}-body`}
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -188,7 +179,7 @@ const ArrangementGame = forwardRef((props: ArrangementGameProps, ref) => {
       >
         {data.image && data.image.trim() !== '' && (
           <div onClick={() => data.audio && new Audio(data.audio).play()}
-            className="w-72 h-72 md:w-112 md:h-112 bg-white rounded-[50px] shadow-2xl overflow-hidden mb-12 border-8 border-white p-4 relative cursor-pointer hover:scale-[1.02] active:scale-95 transition-all group/img"
+            className="w-48 h-48 md:w-64 md:h-64 bg-white rounded-[40px] shadow-2xl overflow-hidden mb-6 border-4 border-white p-3 relative cursor-pointer hover:scale-[1.02] active:scale-95 transition-all group/img"
           >
             <div className="w-full h-full bg-slate-50 rounded-[32px] flex items-center justify-center">
               <img src={data.image} alt={data.word} className="w-full h-full object-cover rounded-[32px]" />
@@ -197,18 +188,24 @@ const ArrangementGame = forwardRef((props: ArrangementGameProps, ref) => {
         )}
 
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <div className="flex flex-wrap justify-center gap-3 md:gap-4 p-6 md:p-8 glass-card rounded-[32px] border-primary/5 shadow-inner">
+          <div className="flex flex-wrap justify-center gap-2 md:gap-3 p-4 md:p-6 glass-card rounded-[32px] border-primary/5 shadow-inner">
             <SortableContext items={letters.map((l) => l.id)} strategy={horizontalListSortingStrategy}>
-              {letters.map((letter, index) => (
-                <div key={letter.id} className={hintIndex === index ? 'ring-4 ring-amber-400 rounded-3xl animate-pulse z-40 relative' : ''}>
-                  <SortableItem
-                    id={letter.id}
-                    letter={letter.char}
-                    isCorrect={isSuccess}
-                    showStatus={showStatus}
-                  />
-                </div>
-              ))}
+              {letters.map((letter, index) => {
+                const boxSize = letters.length > 8 ? 'w-12 h-12 md:w-14 md:h-14 text-xl md:text-2xl' : 
+                               letters.length > 5 ? 'w-14 h-14 md:w-16 md:h-16 text-2xl md:text-3xl' : 
+                               'w-16 h-16 md:w-20 md:h-20 text-3xl md:text-4xl';
+                return (
+                  <div key={letter.id} className={hintIndex === index ? 'ring-4 ring-amber-400 rounded-3xl animate-pulse z-40 relative' : ''}>
+                    <SortableItem
+                      id={letter.id}
+                      letter={letter.char}
+                      isCorrect={isSuccess}
+                      showStatus={showStatus}
+                      sizeClass={boxSize}
+                    />
+                  </div>
+                );
+              })}
             </SortableContext>
           </div>
         </DndContext>

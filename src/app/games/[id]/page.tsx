@@ -44,12 +44,16 @@ export default function GamePlayPage() {
   const gameRef = useRef<any>(null);
   const [levelAids, setLevelAids] = useState({ hintUsed: false, retryCount: 0 });
   const [levelComplete, setLevelComplete] = useState(false);
+  const [timeUp, setTimeUp] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
   const [starsAchieved, setStarsAchieved] = useState(0);
 
   // Reset level aids on level change
   useEffect(() => {
     setLevelAids({ hintUsed: false, retryCount: 0 });
     setLevelComplete(false);
+    setTimeUp(false);
+    setRetryKey(0);
   }, [currentIndex, difficulty]);
 
   // Load real data from API using central utility
@@ -224,8 +228,9 @@ export default function GamePlayPage() {
 
   return (
     <GameWrapper
-      key={`${difficulty}-${currentIndex}`}
+      key={`${difficulty}-${currentIndex}-${retryKey}`}
       title={game.title}
+      questPart={currentIndex + 1}
       onDifficultyChange={(d: DifficultyLevel) => {
         setDifficulty(d);
         setCurrentIndex(null); // Return to map on difficulty change
@@ -233,6 +238,7 @@ export default function GamePlayPage() {
       currentDifficulty={difficulty}
       score={score}
       timeLimit={game.time_limit || (difficulty === 'easy' ? 180 : difficulty === 'medium' ? 120 : 60)}
+      onTimeUp={() => setTimeUp(true)}
       onBack={() => setCurrentIndex(null)}
       onHint={() => {
         if (!levelAids.hintUsed) {
@@ -295,6 +301,49 @@ export default function GamePlayPage() {
           )}
         </AnimatePresence>
 
+        {/* Timeout Overlay (Sad Face + Try Again) */}
+        <AnimatePresence>
+          {timeUp && !levelComplete && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[110] bg-slate-900/80 backdrop-blur-2xl flex items-center justify-center p-6"
+            >
+              <motion.div 
+                initial={{ scale: 0.8, y: 50 }}
+                animate={{ scale: 1, y: 0 }}
+                className="bg-white rounded-[50px] p-12 shadow-3xl flex flex-col items-center max-w-sm w-full text-center border-b-[12px] border-slate-200 relative"
+              >
+                 <div className="absolute -top-16 w-32 h-32 bg-slate-100 rounded-full flex items-center justify-center shadow-xl border-8 border-white overflow-hidden">
+                    <motion.div
+                      animate={{ y: [0, 2, 0] }}
+                      transition={{ repeat: Infinity, duration: 3 }}
+                      className="text-6xl"
+                    >
+                      😢
+                    </motion.div>
+                 </div>
+
+                 <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter mb-4 mt-8">Time's Up!</h2>
+                 <p className="text-slate-500 font-bold mb-10 italic tracking-tight leading-relaxed px-4">
+                    Don't give up! You were so close. Let's try once more!
+                 </p>
+                 
+                 <button 
+                   onClick={() => {
+                     setTimeUp(false);
+                     setRetryKey(prev => prev + 1);
+                   }}
+                   className="w-full py-6 bg-slate-900 text-white rounded-[2rem] font-black text-xl uppercase tracking-widest shadow-2xl shadow-slate-400 hover:scale-105 active:scale-95 transition-all outline-none"
+                 >
+                    Try Again
+                 </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Completion State Decoration (Full Mission) */}
         {game.completed && (
           <motion.div 
@@ -312,13 +361,6 @@ export default function GamePlayPage() {
              </div>
           </motion.div>
         )}
-
-        {/* Level Indicator */}
-        <div className="mb-6 text-center">
-            <span className="px-6 py-2 bg-slate-900 text-white rounded-full text-xs font-black uppercase tracking-widest">
-               Quest Part {currentIndex + 1}
-            </span>
-        </div>
 
         {/* Dynamic Game Component Injection */}
         {game.game_type === 4 ? (

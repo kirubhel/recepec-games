@@ -23,6 +23,30 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          { key: "Access-Control-Allow-Methods", value: "GET,OPTIONS" },
+        ],
+      },
+      {
+        source: "/RESPECT_MANIFEST.json",
+        headers: [
+          { key: "Content-Type", value: "application/json" },
+          { key: "Cache-Control", value: "public, max-age=3600" },
+        ],
+      },
+      {
+        source: "/opds.json",
+        headers: [
+          { key: "Content-Type", value: "application/json" },
+        ],
+      },
+    ];
+  },
   skipTrailingSlashRedirect: true,
 };
 

@@ -10,6 +10,7 @@ export type DifficultyLevel = 'easy' | 'medium' | 'hard';
 interface GameWrapperProps {
   children: React.ReactNode;
   title: string;
+  questPart?: number;
   onDifficultyChange: (difficulty: DifficultyLevel) => void;
   currentDifficulty: DifficultyLevel;
   timeLimit?: number;
@@ -23,6 +24,7 @@ interface GameWrapperProps {
 export default function GameWrapper({
   children,
   title,
+  questPart,
   onDifficultyChange,
   currentDifficulty,
   timeLimit,
@@ -66,7 +68,7 @@ export default function GameWrapper({
 
   return (
     <div 
-      className="min-h-screen flex flex-col relative"
+      className="h-screen flex flex-col relative overflow-hidden"
       style={{
         backgroundImage: 'url("/background.png")',
         backgroundSize: 'cover',
@@ -75,27 +77,70 @@ export default function GameWrapper({
       }}
     >
       {/* Background Dimmer/Overlay for Readability */}
-      <div className="absolute inset-0 bg-white/20 backdrop-blur-[2px] pointer-events-none" />
+      <div className="absolute inset-0 bg-white/10 pointer-events-none" />
 
-      {/* Minimized Top Nav - Title Only */}
-      <header className="sticky top-0 z-40 w-full px-6 py-3 bg-white/30 backdrop-blur-md rounded-b-[24px] mb-4 border-b border-white/20 shadow-sm">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <button 
-            onClick={() => router.push('/respect-minimal-games/')}
-            className="w-12 h-12 bg-orange-500/80 hover:bg-orange-600 flex items-center justify-center rounded-full transition-all transform hover:scale-110 shadow-xl border-2 border-white/30 backdrop-blur-sm"
-            title="Go Back"
-          >
-            <ArrowLeft className="w-6 h-6 text-white stroke-[3px]" />
-          </button>
+      {/* Optimized Top Nav - Compact Metrics */}
+      <header className="sticky top-0 z-40 w-full px-4 py-3 bg-white/40 backdrop-blur-xl rounded-b-[32px] mb-2 border-b border-white/30 shadow-lg">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           
-          <h2 className="text-xl font-black text-slate-950 tracking-tight drop-shadow-sm flex-1 text-center pr-10">
-            {title}
-          </h2>
+          {/* Left Block: Back & Title */}
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={onBack || (() => router.back())}
+              className="w-10 h-10 bg-orange-500 flex items-center justify-center rounded-full transition-all active:scale-90 shadow-lg"
+            >
+              <ArrowLeft className="w-5 h-5 text-white stroke-[3.5px]" />
+            </button>
+            <div className="flex flex-col">
+              <h2 className="text-sm font-black text-slate-900 leading-none mb-1">{title}</h2>
+              {questPart && (
+                <span className="text-[10px] font-bold text-primary uppercase tracking-tighter">
+                   Quest Part {questPart}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Center Block: Timer & Actions */}
+          <div className="flex items-center gap-2 bg-slate-900/5 px-4 py-1.5 rounded-2xl">
+             {timeRemaining !== null && (
+               <div className="flex items-center gap-2 pr-2 border-r border-slate-900/10">
+                  <Clock size={16} className="text-sky-500" />
+                  <span className="font-mono text-lg font-black text-slate-900">{formatTime(timeRemaining)}</span>
+               </div>
+             )}
+             <div className="flex items-center gap-1 pl-1">
+                <button 
+                  onClick={onHint}
+                  className="w-8 h-8 flex items-center justify-center text-amber-500 hover:bg-amber-100 rounded-lg transition-all active:scale-90"
+                >
+                  <Lightbulb size={18} fill="currentColor" fillOpacity={0.2} />
+                </button>
+                <button 
+                  onClick={() => {
+                    if (timeLimit) setTimeRemaining(timeLimit);
+                    onRetry?.();
+                  }}
+                  className="w-8 h-8 flex items-center justify-center text-sky-500 hover:bg-sky-100 rounded-lg transition-all active:scale-90"
+                >
+                  <RotateCcw size={18} />
+                </button>
+             </div>
+          </div>
+
+          {/* Right Block: Pause */}
+          <button 
+            onClick={() => setIsPaused(!isPaused)}
+            className="w-10 h-10 bg-slate-900 text-white rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all"
+          >
+            {isPaused ? <Play size={20} fill="currentColor" /> : <Pause size={20} fill="currentColor" />}
+          </button>
+
         </div>
       </header>
 
-      {/* Main Game Area */}
-      <div className="flex-1 flex flex-col items-center px-6 pb-32 overflow-hidden relative">
+      {/* Main Game Area - Non-Scrollable */}
+      <main className="flex-1 w-full flex flex-col items-center justify-center px-4 overflow-hidden">
         <AnimatePresence>
           {isPaused && (
             <motion.div 
@@ -107,75 +152,30 @@ export default function GameWrapper({
               <motion.div 
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="max-w-md w-full glass-card p-10 rounded-[40px] text-center"
+                className="max-w-md w-full glass-card p-10 rounded-[40px] text-center shadow-3xl border-primary/20"
               >
                 <div className="w-20 h-20 bg-primary/20 rounded-3xl flex items-center justify-center mx-auto mb-6">
                   <Pause className="w-10 h-10 text-primary fill-current" />
                 </div>
-                <h3 className="text-3xl font-extrabold text-slate-900 mb-4">Game Paused</h3>
-                <p className="text-slate-600 mb-10 text-lg leading-relaxed">
-                  Take a quick break! The timer has stopped. Ready to jump back in?
+                <h3 className="text-3xl font-black text-slate-900 mb-4 uppercase tracking-tighter">Paused</h3>
+                <p className="text-slate-600 mb-10 text-lg font-medium leading-relaxed">
+                  Ready to continue the mission?
                 </p>
                 <button 
                   onClick={() => setIsPaused(false)}
-                  className="w-full bg-primary text-white py-5 rounded-2xl font-bold text-xl shadow-xl shadow-primary/30 hover:bg-primary-hover transition-all"
+                  className="w-full bg-primary text-white py-5 rounded-[2rem] font-black text-xl uppercase tracking-widest shadow-2xl shadow-primary/30 hover:scale-105 active:scale-95 transition-all"
                 >
-                  Resume Playing
+                  Resume
                 </button>
               </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="w-full max-w-5xl flex-1 flex flex-col">
-          <div className="flex-1">
-            {children}
-          </div>
+        <div className="w-full max-w-lg flex-1 flex flex-col items-center justify-center">
+           {children}
         </div>
-      </div>
-
-      {/* Persistent Floating Controls Bar - Bottom */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 w-full max-w-lg px-4">
-        <div className="bg-slate-900/90 backdrop-blur-2xl px-6 py-4 rounded-[32px] shadow-2xl border border-white/20 flex items-center justify-between gap-6 pointer-events-auto">
-          {/* Stats Group */}
-          <div className="flex items-center gap-3">
-             <button 
-               onClick={onHint}
-               className="w-12 h-12 bg-white/10 hover:bg-white/20 text-amber-400 rounded-2xl flex items-center justify-center transition-all active:scale-90 border border-white/10" 
-               title="Get Hint"
-             >
-               <Lightbulb size={24} fill="currentColor" fillOpacity={0.2} />
-             </button>
-             <button 
-               onClick={() => {
-                 if (timeLimit) setTimeRemaining(timeLimit);
-                 onRetry?.();
-               }}
-               className="w-12 h-12 bg-white/10 hover:bg-white/20 text-sky-400 rounded-2xl flex items-center justify-center transition-all active:scale-90 border border-white/10" title="Try Again"
-             >
-               <RotateCcw size={24} />
-             </button>
-          </div>
-
-          {/* Center Timer Display */}
-          {timeRemaining !== null && (
-             <div className="flex-1 flex justify-center">
-                <div className="flex items-center gap-3 px-5 py-2.5 bg-white/10 rounded-2xl border border-white/5 shadow-inner">
-                   <Clock className="w-5 h-5 text-sky-400 animate-pulse" />
-                   <span className="font-mono text-2xl font-black text-white tracking-widest">{formatTime(timeRemaining)}</span>
-                </div>
-             </div>
-          )}
-
-          {/* Primary Action Button */}
-          <button 
-            onClick={() => setIsPaused(!isPaused)}
-            className="w-14 h-14 bg-sky-500 text-white rounded-[1.5rem] flex items-center justify-center shadow-lg shadow-sky-500/30 hover:bg-sky-400 transition-all active:scale-95 border-2 border-white/20"
-          >
-            {isPaused ? <Play className="w-7 h-7 fill-current" /> : <Pause className="w-7 h-7 fill-current" />}
-          </button>
-        </div>
-      </div>
+      </main>
     </div>
   );
 }

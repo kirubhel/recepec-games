@@ -1,0 +1,36 @@
+{
+  "@context": "https://readium.org/webpub-manifest/context.jsonld",
+  "metadata": {
+    "title": "ፊደል ፍለጋ",
+    "identifier": "https://kokeb.et/respect-minimal-games/units/am-letter-arrangement",
+    "type": "http://schema.org/EducationalActivity",
+    "author": "Learning Cloud",
+    "language": "am-ET",
+    "modified": "2026-04-10T16:30:00Z"
+  },
+  "links": [
+    {
+      "rel": "self",
+      "href": "https://kokeb.et/respect-minimal-games/units/am-letter-arrangement/manifest.json",
+      "type": "application/webpub+json"
+    },
+    {
+      "rel": "http://opds-spec.org/acquisition",
+      "href": "https://kokeb.et/respect-minimal-games/games/9b175b2e-de2a-4a15-955f-6a7c543809d9",
+      "type": "text/html"
+    }
+  ],
+  "readingOrder": [
+    {
+      "href": "https://kokeb.et/respect-minimal-games/games/9b175b2e-de2a-4a15-955f-6a7c543809d9",
+      "type": "text/html",
+      "title": "ፊደል ፍለጋ - Start"
+    }
+  ],
+  "images": [
+    {
+      "href": "https://learningcloud.et/api/storage/proxy?bucket=gameactivity&objectName=fidel+felga.png",
+      "type": "image/png"
+    }
+  ]
+}

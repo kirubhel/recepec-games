@@ -1,43 +1,46 @@
 {
   "metadata": {
-    "title": "kokeb fidel Educational Games"
+    "title": "kokeb fidel Educational Games",
+    "modified": "2026-04-10T16:30:00Z"
   },
   "links": [
     {
       "rel": "self",
       "href": "https://kokeb.et/respect-minimal-games/opds.json",
-      "type": "application/opds+json"
+      "type": "application/json"
     }
   ],
   "publications": [
     {
       "metadata": {
-        "title": "Letter Arrangement",
-        "description": "Learn to arrange letters and spell words in English.",
+        "identifier": "https://kokeb.et/respect-minimal-games/units/am-letter-arrangement",
+        "title": "ፊደል ፍለጋ",
+        "description": "የአማርኛ ፊደላትን ወደ ቃላት ማደራጀት።",
         "author": "Learning Cloud",
-        "language": "en"
+        "language": "am"
       },
       "links": [
         {
-          "rel": "http://opds-spec.org/acquisition",
-          "href": "https://kokeb.et/respect-minimal-games/units/letter-arrangement/manifest.json",
+          "rel": "self",
+          "href": "https://kokeb.et/respect-minimal-games/units/am-letter-arrangement/manifest.json",
           "type": "application/webpub+json"
         },
         {
           "rel": "http://opds-spec.org/acquisition",
-          "href": "https://kokeb.et/respect-minimal-games/games/d6d2cf62-23b8-4c2a-8d36-0f3b53a3cb93",
-          "type": "text/html"
+          "href": "https://kokeb.et/respect-minimal-games/units/am-letter-arrangement/manifest.json",
+          "type": "application/webpub+json"
         }
       ],
       "images": [
         {
-          "href": "https://learningcloud.et/api/storage/proxy?bucket=english&objectName=LETTER+.png",
+          "href": "https://learningcloud.et/api/storage/proxy?bucket=gameactivity&objectName=fidel+felga.png",
           "type": "image/png"
         }
       ]
     },
     {
       "metadata": {
+        "identifier": "https://kokeb.et/respect-minimal-games/units/om-letter-arrangement",
         "title": "xalayaa qopheessuu",
         "description": "Tapha qubeewwan herregaa fi dubbisuu.",
         "author": "Learning Cloud",
@@ -45,14 +48,14 @@
       },
       "links": [
         {
-          "rel": "http://opds-spec.org/acquisition",
-          "href": "https://kokeb.et/respect-minimal-games/units/xalayaa-qopheessuu/manifest.json",
+          "rel": "self",
+          "href": "https://kokeb.et/respect-minimal-games/units/om-letter-arrangement/manifest.json",
           "type": "application/webpub+json"
         },
         {
           "rel": "http://opds-spec.org/acquisition",
-          "href": "https://kokeb.et/respect-minimal-games/games/d5630ff2-daba-474c-9700-edc13915dcee",
-          "type": "text/html"
+          "href": "https://kokeb.et/respect-minimal-games/units/om-letter-arrangement/manifest.json",
+          "type": "application/webpub+json"
         }
       ],
       "images": [
@@ -64,6 +67,34 @@
     },
     {
       "metadata": {
+        "identifier": "https://kokeb.et/respect-minimal-games/units/en-letter-arrangement",
+        "title": "Letter Arrangement",
+        "description": "Learn to arrange letters and spell words in English.",
+        "author": "Learning Cloud",
+        "language": "en"
+      },
+      "links": [
+        {
+          "rel": "self",
+          "href": "https://kokeb.et/respect-minimal-games/units/en-letter-arrangement/manifest.json",
+          "type": "application/webpub+json"
+        },
+        {
+          "rel": "http://opds-spec.org/acquisition",
+          "href": "https://kokeb.et/respect-minimal-games/units/en-letter-arrangement/manifest.json",
+          "type": "application/webpub+json"
+        }
+      ],
+      "images": [
+        {
+          "href": "https://learningcloud.et/api/storage/proxy?bucket=english&objectName=LETTER%20.png",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "identifier": "https://kokeb.et/respect-minimal-games/units/am-letters",
         "title": "ከ ሀ - ፐ",
         "description": "የአማርኛ ፊደላትን ቅደም ተከተል መለማመጃ።",
         "author": "Learning Cloud",
@@ -71,14 +102,14 @@
       },
       "links": [
         {
-          "rel": "http://opds-spec.org/acquisition",
-          "href": "https://kokeb.et/respect-minimal-games/units/amharic-letters/manifest.json",
+          "rel": "self",
+          "href": "https://kokeb.et/respect-minimal-games/units/am-letters/manifest.json",
           "type": "application/webpub+json"
         },
         {
           "rel": "http://opds-spec.org/acquisition",
-          "href": "https://kokeb.et/respect-minimal-games/games/92e6f84d-170d-4abb-b121-1e5b578ff737",
-          "type": "text/html"
+          "href": "https://kokeb.et/respect-minimal-games/units/am-letters/manifest.json",
+          "type": "application/webpub+json"
         }
       ],
       "images": [
