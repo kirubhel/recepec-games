@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Pause, Play, Clock, Trophy, Home, Lightbulb, RotateCcw, ArrowLeft, Gamepad2 } from 'lucide-react';
+import { Pause, Play, Clock, Trophy, Home, Lightbulb, RotateCcw, ArrowLeft, Gamepad2, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import ConfettiEffect from '@/components/games/ConfettiEffect';
 
