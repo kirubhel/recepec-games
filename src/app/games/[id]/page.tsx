@@ -250,118 +250,18 @@ export default function GamePlayPage() {
         setLevelAids(prev => ({ ...prev, retryCount: prev.retryCount + 1 }));
         gameRef.current?.handleRetry?.();
       }}
+      isLevelComplete={levelComplete}
+      isTimeUp={timeUp}
+      stars={starsAchieved}
+      onNext={handleNextPart}
+      onTryAgain={() => {
+        setTimeUp(false);
+        setRetryKey(prev => prev + 1);
+      }}
+      isMissionComplete={game.completed}
     >
       <div className="w-full flex flex-col items-center animate-in fade-in slide-in-from-bottom-5 duration-700">
         
-        {/* Success Overlay with Stars and Next Button */}
-        <AnimatePresence>
-          {levelComplete && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-xl flex items-center justify-center p-6"
-            >
-              <ConfettiEffect active={true} />
-              <motion.div 
-                initial={{ scale: 0.8, y: 50, rotate: -2 }}
-                animate={{ scale: 1, y: 0, rotate: 0 }}
-                className="bg-white rounded-[50px] p-12 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] flex flex-col items-center max-w-sm w-full text-center border-b-[12px] border-slate-100 relative"
-              >
-                 <div className="absolute -top-16 w-32 h-32 bg-amber-400 rounded-full flex items-center justify-center shadow-xl border-8 border-white">
-                    <Star size={64} className="text-white fill-white" />
-                 </div>
-
-                 <div className="flex gap-3 mb-8 mt-16 items-end">
-                    {[1, 2, 3].map((s) => (
-                      <motion.div
-                        key={s}
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.2 + (s * 0.1), type: 'spring' }}
-                      >
-                        <Star 
-                          size={s === 2 ? 84 : 64} 
-                          className={`${starsAchieved >= s ? 'text-amber-400 fill-amber-400 drop-shadow-lg' : 'text-slate-100'} ${s === 2 ? '-translate-y-4' : ''}`} 
-                        />
-                      </motion.div>
-                    ))}
-                 </div>
-                 <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter mb-2">Excellent!</h2>
-                 <p className="text-slate-400 font-bold mb-10 italic tracking-tight">Quest Part {(currentIndex || 0) + 1} Complete</p>
-                 
-                 <button 
-                   onClick={handleNextPart}
-                   className="w-full py-6 bg-primary text-white rounded-[2rem] font-black text-xl uppercase tracking-widest shadow-2xl shadow-primary/40 hover:scale-105 active:scale-95 transition-all outline-none"
-                 >
-                    Next Part
-                 </button>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Timeout Overlay (Sad Face + Try Again) */}
-        <AnimatePresence>
-          {timeUp && !levelComplete && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[110] bg-slate-900/80 backdrop-blur-2xl flex items-center justify-center p-6"
-            >
-              <motion.div 
-                initial={{ scale: 0.8, y: 50 }}
-                animate={{ scale: 1, y: 0 }}
-                className="bg-white rounded-[50px] p-12 shadow-3xl flex flex-col items-center max-w-sm w-full text-center border-b-[12px] border-slate-200 relative"
-              >
-                 <div className="absolute -top-16 w-32 h-32 bg-slate-100 rounded-full flex items-center justify-center shadow-xl border-8 border-white overflow-hidden">
-                    <motion.div
-                      animate={{ y: [0, 2, 0] }}
-                      transition={{ repeat: Infinity, duration: 3 }}
-                      className="text-6xl"
-                    >
-                      😢
-                    </motion.div>
-                 </div>
-
-                 <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter mb-4 mt-8">Time's Up!</h2>
-                 <p className="text-slate-500 font-bold mb-10 italic tracking-tight leading-relaxed px-4">
-                    Don't give up! You were so close. Let's try once more!
-                 </p>
-                 
-                 <button 
-                   onClick={() => {
-                     setTimeUp(false);
-                     setRetryKey(prev => prev + 1);
-                   }}
-                   className="w-full py-6 bg-slate-900 text-white rounded-[2rem] font-black text-xl uppercase tracking-widest shadow-2xl shadow-slate-400 hover:scale-105 active:scale-95 transition-all outline-none"
-                 >
-                    Try Again
-                 </button>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Completion State Decoration (Full Mission) */}
-        {game.completed && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="fixed inset-0 z-[60] bg-emerald-500 flex flex-col items-center justify-center p-10 text-white"
-          >
-             <div className="w-40 h-40 bg-white rounded-full flex items-center justify-center text-emerald-500 mb-8 shadow-2xl pulse-emerald">
-                <Gamepad2 size={80} />
-             </div>
-             <h2 className="text-5xl font-black uppercase tracking-tighter mb-4">Mission Complete!</h2>
-             <p className="text-xl font-bold opacity-80 mb-12">XP Rewards Reported to Learning Cloud</p>
-             <div className="text-2xl font-black py-4 px-10 bg-white/20 rounded-full">
-                Score: {score}
-             </div>
-          </motion.div>
-        )}
-
         {/* Dynamic Game Component Injection */}
         {game.game_type === 4 ? (
           <ArrangementGame 
