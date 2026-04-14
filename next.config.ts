@@ -5,13 +5,15 @@ const withPWA = withPWAInit({
   dest: "public",
   disable: process.env.NODE_ENV === "development",
   register: true,
-  skipWaiting: true,
   cacheOnFrontEndNav: true,
   aggressiveFrontEndNavCaching: true,
   reloadOnOnline: true,
-  swcMinify: true,
   workboxOptions: {
+    skipWaiting: true,
+
+    clientsClaim: true,
     disableDevLogs: true,
+
     // Add custom caching for API responses as requested
     runtimeCaching: [
       {
