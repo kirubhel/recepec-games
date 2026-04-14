@@ -1,0 +1,21 @@
+{
+  "name": "RESPECT Games",
+  "short_name": "RESPECT",
+  "description": "High-quality educational games integrated with the RESPECT ecosystem.",
+  "start_url": "/respect-minimal-games/",
+  "display": "standalone",
+  "background_color": "#AEE2FF",
+  "theme_color": "#AEE2FF",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

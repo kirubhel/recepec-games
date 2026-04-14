@@ -17,11 +17,27 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "RESPECT Games | Kokeb Learning Cloud",
   description: "High-quality educational games integrated with the RESPECT ecosystem.",
+  manifest: "/respect-minimal-games/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "RESPECT Games",
+  },
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
+    icon: "/respect-minimal-games/favicon.ico",
+    shortcut: "/respect-minimal-games/favicon.ico",
+    apple: "/respect-minimal-games/logo.png",
   },
 };
+
+export const viewport = {
+  themeColor: "#AEE2FF",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 
 export default function RootLayout({
   children,
