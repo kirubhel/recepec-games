@@ -92,7 +92,7 @@ export default function Home() {
       {/* Top Native Header - Compact & Gradient */}
       <header className="h-[90px] max-w-7xl mx-auto px-6 md:px-20 flex items-center gap-6 transition-all">
         <div className="w-14 h-14 bg-gradient-to-br from-white/40 to-white/10 backdrop-blur-xl rounded-[1.2rem] flex items-center justify-center shadow-xl border border-white/30 overflow-hidden">
-          <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain drop-shadow-md" />
+          <img src="/respect-minimal-games/logo.png" alt="Logo" className="w-10 h-10 object-contain drop-shadow-md" />
         </div>
         <h1 className="text-3xl md:text-4xl font-[900] text-white tracking-tight uppercase drop-shadow-[0_2px_4px_rgba(30,58,138,0.2)]">
           All Games
@@ -222,13 +222,13 @@ export default function Home() {
                         {/* Game Thumbnail with Fallback to Logo */}
                         <div className="absolute inset-0 bg-slate-100 flex items-center justify-center overflow-hidden">
                            <img 
-                              src={game.thumbnail_url || game.image_url || '/logo.png'} 
+                              src={game.thumbnail_url || game.image_url || '/respect-minimal-games/logo.png'} 
                               alt={game.title}
                               className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${(!game.thumbnail_url && !game.image_url) ? 'opacity-20 translate-y-4 contrast-125' : ''}`}
                            />
                            {(!game.thumbnail_url && !game.image_url) && (
                               <div className="absolute inset-x-0 bottom-12 flex flex-col items-center gap-2 px-10 text-center">
-                                 <img src="/logo.png" className="w-20 mb-4 opacity-100 drop-shadow-2xl" alt="Logo" />
+                                 <img src="/respect-minimal-games/logo.png" className="w-20 mb-4 opacity-100 drop-shadow-2xl" alt="Logo" />
                               </div>
                            )}
                         </div>

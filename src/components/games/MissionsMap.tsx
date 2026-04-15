@@ -94,7 +94,7 @@ export default function MissionsMap({
     <div 
       className="min-h-screen flex flex-col relative pt-4 pb-40 overflow-x-hidden"
       style={{
-        backgroundImage: 'url("/background.png")',
+        backgroundImage: 'url("/respect-minimal-games/background.png")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed'

@@ -56,7 +56,7 @@ export default function RootLayout({
         {/* Native App Background Image */}
         <div 
           className="fixed inset-0 -z-20 bg-cover bg-center bg-no-repeat pointer-events-none transition-opacity duration-1000"
-          style={{ backgroundImage: 'url("/background.png")' }}
+          style={{ backgroundImage: 'url("/respect-minimal-games/background.png")' }}
         />
         
         {/* Soft Blueish Overlay - More Transparent */}

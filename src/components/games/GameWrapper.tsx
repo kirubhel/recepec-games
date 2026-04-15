@@ -98,7 +98,7 @@ export default function GameWrapper({
     <div 
       className="h-screen flex flex-col relative overflow-hidden"
       style={{
-        backgroundImage: 'url("/background.png")',
+        backgroundImage: 'url("/respect-minimal-games/background.png")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed'

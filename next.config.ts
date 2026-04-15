@@ -4,6 +4,8 @@ import withPWAInit from "@ducanh2912/next-pwa";
 const withPWA = withPWAInit({
   dest: "public",
   disable: process.env.NODE_ENV === "development",
+  // Scope must match the proxy prefix so the SW controls all pages under this path
+  scope: "/respect-minimal-games/",
   register: true,
   cacheOnFrontEndNav: true,
   aggressiveFrontEndNavCaching: true,
