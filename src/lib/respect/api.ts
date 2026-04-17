@@ -18,6 +18,10 @@ export interface Game {
   is_active: boolean;
   is_free: boolean;
   enable_instruction_audio?: boolean;
+  image_url?: string;
+  video_url?: string;
+  content_body?: string;
+  summary_questions?: any;
 }
 
 export const fetchRespectGame = async (id: string): Promise<Game | null> => {
@@ -106,7 +110,7 @@ export const parseGameData = (game: any, difficulty: string) => {
   
   if (!levels || !Array.isArray(levels) || levels.length === 0) {
     // Last resort: If difficulty search failed but we have any data, maybe it's a flat object
-    if (difficulty === 'medium' && (data.word || data.picture)) return [data];
+    if (difficulty === 'medium' && (data.word || data.picture || data.question || data.options)) return [data];
     return [];
   }
 
@@ -119,4 +123,46 @@ export const parseGameData = (game: any, difficulty: string) => {
   });
   
   return flattened;
+};
+
+export const fetchRespectCourse = async (courseId: string) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/respect/courses/${courseId}`);
+    if (res.ok) {
+      const json = await res.json();
+      return json.data || null;
+    }
+    return null;
+  } catch (err) {
+    console.error('Failed to fetch course details:', err);
+    return null;
+  }
+};
+
+export const fetchRespectSections = async (courseId: string) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/respect/sections?course_id=${courseId}`);
+    if (res.ok) {
+      const json = await res.json();
+      return json.data || [];
+    }
+    return [];
+  } catch (err) {
+    console.error('Failed to fetch sections:', err);
+    return [];
+  }
+};
+
+export const fetchGamesBySection = async (sectionId: string) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/respect/games?section=${sectionId}`);
+    if (res.ok) {
+      const json = await res.json();
+      return json.data || [];
+    }
+    return [];
+  } catch (err) {
+    console.error('Failed to fetch games by section:', err);
+    return [];
+  }
 };

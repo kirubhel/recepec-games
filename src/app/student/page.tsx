@@ -23,16 +23,26 @@ export default function StudentHome() {
   const { localUser, isAuthenticating } = useRESPECT();
   const [loading, setLoading] = useState(true);
   const [games, setGames] = useState<any[]>([]);
+  const [courses, setCourses] = useState<any[]>([]);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
     async function fetchGames() {
       try {
         setLoading(true);
-        const res = await fetch(`${API_BASE_URL}/respect/games`);
-        if (res.ok) {
-          const json = await res.json();
+        const [gamesRes, coursesRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/respect/games`),
+          fetch(`${API_BASE_URL}/respect/courses`)
+        ]);
+        
+        if (gamesRes.ok) {
+          const json = await gamesRes.json();
           setGames(json.data || []);
+        }
+        
+        if (coursesRes.ok) {
+          const json = await coursesRes.json();
+          setCourses(json.data || []);
         }
       } catch (err) {
         console.error('Fetch error:', err);
@@ -115,6 +125,40 @@ export default function StudentHome() {
                     </div>
                  </motion.div>
               </div>
+           </div>
+        </section>
+
+        {/* Roadmaps Section */}
+        <section className="space-y-8">
+           <div className="flex items-center justify-between">
+              <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Learning Roadmaps</h3>
+              <Link href="/respect-minimal-games/student/courses" className="text-primary text-xs font-black uppercase tracking-widest flex items-center gap-2 hover:gap-3 transition-all">
+                 View All <ChevronRight size={14} />
+              </Link>
+           </div>
+           
+           <div className="flex gap-6 overflow-x-auto pb-6 -mx-6 px-6 no-scrollbar">
+              {courses.filter((c: any) => c.section_count > 0).map((course) => (
+                 <Link 
+                   key={course.id} 
+                   href={`/respect-minimal-games/student/courses/${course.id}`}
+                   className="flex-shrink-0 w-72 bg-white rounded-3xl p-6 border border-slate-100 hover:shadow-xl transition-all group"
+                 >
+                    <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-white transition-colors">
+                       <BookOpen size={24} />
+                    </div>
+                    <h4 className="text-xl font-black text-slate-800 mb-1">{course.name}</h4>
+                    <p className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest">{course.code} CURRICULUM</p>
+                    <div className="mt-6 flex items-center justify-between">
+                       <div className="flex -space-x-2">
+                          {[1,2,3].map(i => (
+                             <div key={i} className="w-6 h-6 rounded-full bg-slate-100 border-2 border-white" />
+                          ))}
+                       </div>
+                       <div className="text-primary font-black text-xs">GO</div>
+                    </div>
+                 </Link>
+              ))}
            </div>
         </section>
 

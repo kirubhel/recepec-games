@@ -130,7 +130,7 @@ export default function GameActivitiesPage() {
       <div className="grid grid-cols-3 gap-6">
         {[
           { label: 'Total Quests', value: games.length, icon: Gamepad2, color: 'text-primary bg-primary/10' },
-          { label: 'Domains', value: courses.length, icon: BookOpen, color: 'text-amber-500 bg-amber-50' },
+          { label: 'Courses', value: courses.length, icon: BookOpen, color: 'text-amber-500 bg-amber-50' },
           { label: 'Grade Tracks', value: grades.length, icon: GraduationCap, color: 'text-emerald-500 bg-emerald-50' },
         ].map((stat, i) => (
           <div key={i} className="bg-white rounded-[2.5rem] p-6 border border-slate-100 shadow-sm flex items-center justify-between">
@@ -164,7 +164,7 @@ export default function GameActivitiesPage() {
             onChange={(e) => setFilterCourse(e.target.value)}
             className="bg-transparent border-none focus:ring-0 text-sm font-semibold text-slate-600 cursor-pointer"
           >
-            <option value="all">All Domains</option>
+            <option value="all">All Courses</option>
             {courses.map((c) => (
               <option key={c.id} value={c.name}>{c.name}</option>
             ))}

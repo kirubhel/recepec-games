@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import GameWrapper, { DifficultyLevel } from '@/components/games/GameWrapper';
 import ArrangementGame from '@/components/games/ArrangementGame';
+import PuzzleGame from '@/components/games/PuzzleGame';
+import MCQGame from '@/components/games/MCQGame';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRESPECT } from '@/components/RESPECTProvider';
 import { reportProgress } from '@/lib/respect/reporting';
@@ -11,6 +13,7 @@ import { fetchRespectGame, parseGameData } from '@/lib/respect/api';
 import { Loader2, Gamepad2, AlertCircle, Star } from 'lucide-react';
 import ConfettiEffect from '@/components/games/ConfettiEffect';
 import Link from 'next/link';
+import AssessmentLayer from '@/components/games/AssessmentLayer';
 
 interface GameContent {
   id: string;
@@ -19,6 +22,9 @@ interface GameContent {
   audio?: string;
   hint?: string;
   letters?: string[];
+  question?: string;
+  options?: string[];
+  answer?: any;
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://learningcloud.et/api';
@@ -66,13 +72,14 @@ export default function GamePlayPage() {
         const gameData = await fetchRespectGame(id);
         
         if (gameData) {
-          console.log(`Successfully synced mission: ${gameData.title}`);
+          console.log(`Successfully synced mission: ${gameData.title}`, gameData);
           setGame(gameData);
 
-          // Smart initial difficulty selection
           const easyLevels = parseGameData(gameData, 'easy');
           const mediumLevels = parseGameData(gameData, 'medium');
           const hardLevels = parseGameData(gameData, 'hard');
+          
+          console.log('Parsed Levels:', { easy: easyLevels.length, medium: mediumLevels.length, hard: hardLevels.length });
 
           if (easyLevels.length > 0) setDifficulty('easy');
           else if (mediumLevels.length > 0) setDifficulty('medium');
@@ -142,6 +149,8 @@ export default function GamePlayPage() {
     }
   };
 
+  const [showAssessment, setShowAssessment] = useState(false);
+
   const handleNextPart = () => {
     const currentLevels = parseGameData(game, difficulty);
     const nextIndex = (currentIndex || 0) + 1;
@@ -149,7 +158,11 @@ export default function GamePlayPage() {
     if (nextIndex < currentLevels.length) {
       setCurrentIndex(nextIndex);
     } else {
-      setCurrentIndex(null);
+      if (game.summary_questions && game.summary_questions.length > 0) {
+        setShowAssessment(true);
+      } else {
+        setCurrentIndex(null);
+      }
     }
     setLevelComplete(false);
   };
@@ -159,10 +172,13 @@ export default function GamePlayPage() {
   const formattedLevels: GameContent[] = levels.map((a: any) => ({
     id: a.id || Math.random().toString(),
     word: a.word || '',
-    picture: a.picture || '',
+    picture: a.picture || a.image_url || a.image || '',
     audio: a.audio || a.audio_url || '',
     hint: a.hint,
-    letters: a.letters || []
+    letters: a.letters || [],
+    question: a.question || a.q || '',
+    options: a.options || a.choices || [],
+    answer: a.answer !== undefined ? a.answer : a.correct_answer
   }));
 
   if (loading) {
@@ -193,7 +209,13 @@ export default function GamePlayPage() {
     );
   }
 
-  if (formattedLevels.length === 0) {
+  const isSummaryOnly = formattedLevels.length === 0 && game?.summary_questions && (
+    Array.isArray(game.summary_questions) 
+      ? game.summary_questions.length > 0 
+      : (typeof game.summary_questions === 'string' ? game.summary_questions !== '[]' && game.summary_questions !== '' : true)
+  );
+
+  if (formattedLevels.length === 0 && !isSummaryOnly) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-10 text-center">
         <div className="w-24 h-24 bg-amber-100 rounded-[3rem] flex items-center justify-center text-amber-500 mb-8">
@@ -208,8 +230,33 @@ export default function GamePlayPage() {
     );
   }
 
+  // Show Summary Only View
+  if (isSummaryOnly && currentIndex === null && !showAssessment) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-10 text-center">
+        <div className="w-24 h-24 bg-primary/10 rounded-[3rem] flex items-center justify-center text-primary mb-8 shadow-xl">
+           <Star size={48} fill="currentColor" />
+        </div>
+        <h2 className="text-4xl font-black text-slate-900 mb-4 uppercase tracking-tighter">{game.title}</h2>
+        <p className="text-slate-500 mb-10 max-w-sm font-bold italic">This is a summary mission. Complete the following questions to master this topic.</p>
+        
+        <div className="flex flex-col gap-4 w-full max-w-xs">
+          <button 
+            onClick={() => setShowAssessment(true)}
+            className="px-10 py-5 bg-primary text-white rounded-[2rem] font-black uppercase tracking-widest shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+          >
+             Start Summary
+          </button>
+          <Link href="/respect-minimal-games/" className="px-10 py-4 bg-white text-slate-400 rounded-[2rem] font-bold uppercase tracking-widest border-2 border-slate-100 hover:bg-slate-50 transition-all">
+             Not Now
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   // Show Map View if no level is selected
-  if (currentIndex === null) {
+  if (currentIndex === null && !showAssessment) {
     return (
       <MissionsMap 
         title={game.title}
@@ -224,13 +271,13 @@ export default function GamePlayPage() {
     );
   }
 
-  const currentData = formattedLevels[currentIndex as number];
+  const currentData = currentIndex !== null ? formattedLevels[currentIndex] : null;
 
   return (
     <GameWrapper
       key={`${difficulty}-${currentIndex}-${retryKey}`}
       title={game.title}
-      questPart={currentIndex + 1}
+      questPart={currentIndex !== null ? currentIndex + 1 : 0}
       onDifficultyChange={(d: DifficultyLevel) => {
         setDifficulty(d);
         setCurrentIndex(null); // Return to map on difficulty change
@@ -263,7 +310,18 @@ export default function GamePlayPage() {
       <div className="w-full flex flex-col items-center animate-in fade-in slide-in-from-bottom-5 duration-700">
         
         {/* Dynamic Game Component Injection */}
-        {game.game_type === 4 ? (
+        {currentData && game.game_type === 1 ? (
+          <MCQGame 
+            ref={gameRef}
+            data={{
+              question: currentData.question || '',
+              options: currentData.options || [],
+              answer: currentData.answer,
+              picture: currentData.picture
+            }}
+            onSuccess={handleSuccess}
+          />
+        ) : currentData && game.game_type === 4 ? (
           <ArrangementGame 
             ref={gameRef}
             data={{
@@ -275,7 +333,30 @@ export default function GamePlayPage() {
             }} 
             onSuccess={handleSuccess} 
           />
-        ) : (
+        ) : currentData && game.game_type === 5 ? (
+          <PuzzleGame 
+            ref={gameRef}
+            data={game.game_data}
+            onSuccess={handleSuccess}
+          />
+        ) : isSummaryOnly && !showAssessment ? (
+          <div className="min-h-[60vh] flex flex-col items-center justify-center p-10 text-center">
+            <div className="w-24 h-24 bg-primary/10 rounded-[3rem] flex items-center justify-center text-primary mb-8 shadow-xl">
+               <Star size={48} fill="currentColor" />
+            </div>
+            <h2 className="text-4xl font-black text-slate-900 mb-4 uppercase tracking-tighter">{game.title}</h2>
+            <p className="text-slate-500 mb-10 max-w-sm font-bold italic">This is a summary mission. Complete the following questions to master this topic.</p>
+            
+            <div className="flex flex-col gap-4 w-full max-w-xs">
+              <button 
+                onClick={() => setShowAssessment(true)}
+                className="px-10 py-5 bg-primary text-white rounded-[2rem] font-black uppercase tracking-widest shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+              >
+                 Start Summary
+              </button>
+            </div>
+          </div>
+        ) : !showAssessment && (
           <div className="p-20 glass-card rounded-[40px] text-center max-w-md border-primary/20">
              <AlertCircle className="w-16 h-16 text-primary mx-auto mb-6" />
              <h3 className="text-2xl font-black text-slate-900 mb-3 uppercase">Unsupported Type</h3>
@@ -285,6 +366,34 @@ export default function GamePlayPage() {
           </div>
         )}
       </div>
+
+      <AnimatePresence>
+        {showAssessment && (
+          <AssessmentLayer 
+            questions={game.summary_questions}
+            heroImage={game.image_url || game.thumbnail_url}
+            onComplete={() => {
+              // Save summary completion to progress
+              const savedProgress = localStorage.getItem(`mission_progress_${id}_v3`);
+              const currentProgress = savedProgress ? JSON.parse(savedProgress) : { easy: {}, medium: {}, hard: {} };
+              
+              // Add summary completion marker
+              currentProgress.summary = { completed: true, updatedAt: new Date().toISOString() };
+              
+              localStorage.setItem(`mission_progress_${id}_v3`, JSON.stringify(currentProgress));
+              
+              setShowAssessment(false);
+              if (isSummaryOnly) {
+                // If it's a section activity, return to the section page
+                router.push(`/respect-minimal-games/student/sections/${game?.respect_section_id}`);
+              } else {
+                setCurrentIndex(null); // Return to mission map
+              }
+            }}
+            onClose={() => setShowAssessment(false)}
+          />
+        )}
+      </AnimatePresence>
     </GameWrapper>
   );
 }

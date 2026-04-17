@@ -83,7 +83,14 @@ export default function Home() {
     return data.games.filter(game => {
       const matchCourse = selectedCourse === 'all' || game.course_id === selectedCourse;
       const matchGrade = selectedGrade === 'all' || game.grade_level_id === selectedGrade;
-      return matchCourse && matchGrade;
+      
+      // Only show games with empty summary_questions on the home page
+      // Those with summary questions are treated as course/lesson activities
+      const hasNoSummary = !game.summary_questions || 
+                           (Array.isArray(game.summary_questions) && game.summary_questions.length === 0) ||
+                           (typeof game.summary_questions === 'string' && (game.summary_questions === '[]' || game.summary_questions === ''));
+      
+      return matchCourse && matchGrade && hasNoSummary;
     });
   }, [data.games, selectedCourse, selectedGrade]);
 
@@ -95,7 +102,7 @@ export default function Home() {
           <img src="/respect-minimal-games/logo.png" alt="Logo" className="w-10 h-10 object-contain drop-shadow-md" />
         </div>
         <h1 className="text-3xl md:text-4xl font-[900] text-white tracking-tight uppercase drop-shadow-[0_2px_4px_rgba(30,58,138,0.2)]">
-          All Games
+          All Contents
         </h1>
       </header>
 
@@ -174,6 +181,72 @@ export default function Home() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Roadmaps / Lessons Section */}
+        {!loading && data.courses.length > 0 && (
+          <section className="space-y-6">
+            <div className="flex items-center justify-between px-2">
+               <h2 className="text-xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
+                  <Sparkles size={20} className="text-amber-400" />
+                  Learning Roadmaps
+               </h2>
+               <Link href="/respect-minimal-games/student/courses" className="text-[0.65rem] font-black text-white/60 hover:text-white uppercase tracking-widest transition-all">
+                  Show All <span className="ml-1">→</span>
+               </Link>
+            </div>
+            
+            <div className="flex gap-6 overflow-x-auto pb-4 no-scrollbar -mx-2 px-2">
+              {data.courses.filter(c => c.section_count > 0).map((course) => (
+                <Link 
+                  key={course.id} 
+                  href={`/respect-minimal-games/student/courses/${course.id}`}
+                  className="flex-shrink-0 w-72 group"
+                >
+                  <div className="bg-slate-900 border border-white/20 p-8 rounded-[3rem] hover:bg-slate-800 transition-all duration-500 relative overflow-hidden h-full shadow-2xl">
+                    {/* Background Overlay or Image */}
+                    {course.background_url ? (
+                       <>
+                          <img 
+                            src={course.background_url} 
+                            className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-700" 
+                            alt="" 
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
+                       </>
+                    ) : (
+                       <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-blue-600/20 opacity-40" />
+                    )}
+                    
+                    <div className="relative z-10 w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform">
+                      <BookOpen size={28} />
+                    </div>
+                    <h3 className="relative z-10 text-2xl font-black text-white mb-2 leading-tight">{course.name}</h3>
+                    <p className="relative z-10 text-[0.65rem] font-bold text-white/50 uppercase tracking-[0.2em]">{course.code} Curriculum</p>
+                    
+                    {/* Tiny stats inside card */}
+                    <div className="relative z-10 mt-8 pt-6 border-t border-white/10 flex items-center justify-between">
+                       <span className="text-[0.6rem] font-black text-white/40 uppercase tracking-widest">Enroll Now</span>
+                       <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white shadow-lg">
+                          <Play size={14} fill="currentColor" className="ml-0.5" />
+                       </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Quest Registry Header */}
+        <div className="flex items-center justify-between px-2 pt-6">
+           <h2 className="text-xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
+              <Gamepad2 size={24} className="text-primary" />
+              Quest Registry
+           </h2>
+           <span className="text-[0.65rem] font-black text-white/40 uppercase tracking-widest">
+              {filteredGames.length} Missions Found
+           </span>
+        </div>
 
         {/* Game Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

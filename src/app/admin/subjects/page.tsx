@@ -22,6 +22,7 @@ interface Course {
   name: string;
   code: string;
   description?: string;
+  background_url?: string;
   is_active?: boolean;
   games_count?: number;
 }
@@ -105,10 +106,11 @@ export default function SubjectsPage() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const payload = {
-      name:        fd.get('name') as string,
-      code:        (fd.get('code') as string).toUpperCase(),
-      description: fd.get('description') as string,
-      is_active:   true,
+      name:           fd.get('name') as string,
+      code:           (fd.get('code') as string).toUpperCase(),
+      description:    fd.get('description') as string,
+      background_url: fd.get('background_url') as string,
+      is_active:      true,
     };
 
     try {
@@ -127,7 +129,7 @@ export default function SubjectsPage() {
 
       await fetchCourses();
       setShowModal(false);
-      setStatusMsg(selectedCourse ? 'Subject updated.' : 'Subject added to RESPECT registry.');
+      setStatusMsg(selectedCourse ? 'Course updated.' : 'Course added to RESPECT registry.');
       setStatus('success');
       setTimeout(() => setStatus(null), 3500);
     } catch (err) {
@@ -147,7 +149,7 @@ export default function SubjectsPage() {
       });
       setCourses((prev) => prev.filter((c) => c.id !== deleteTarget.id));
       setDeleteTarget(null);
-      setStatusMsg('Subject removed from registry.');
+      setStatusMsg('Course removed from registry.');
       setStatus('success');
       setTimeout(() => setStatus(null), 3000);
     } catch (err) {
@@ -169,9 +171,9 @@ export default function SubjectsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Subjects</h1>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Courses</h1>
           <p className="text-slate-500 font-medium font-serif italic mt-1">
-            RESPECT course registry — {courses.length} domain{courses.length !== 1 ? 's' : ''} linked.
+            RESPECT course registry — {courses.length} course{courses.length !== 1 ? 's' : ''} linked.
           </p>
         </div>
         <button
@@ -179,7 +181,7 @@ export default function SubjectsPage() {
           className="flex items-center gap-3 bg-slate-900 text-white px-6 py-4 rounded-3xl font-bold shadow-xl shadow-slate-300 hover:scale-105 active:scale-95 transition-all duration-200"
         >
           <Plus size={20} />
-          <span>Add Subject</span>
+          <span>Add Course</span>
         </button>
       </div>
 
@@ -193,7 +195,7 @@ export default function SubjectsPage() {
       {/* Stats */}
       <div className="grid grid-cols-4 gap-6">
         {[
-          { label: 'Total Subjects',  value: courses.length, dot: 'bg-primary'      },
+          { label: 'Total Courses',   value: courses.length, dot: 'bg-primary'      },
           { label: 'Linked Games',    value: totalGames,     dot: 'bg-emerald-500'   },
           { label: 'Registry Status', value: 'LIVE',         dot: 'bg-amber-400'     },
           { label: 'Endpoint Access', value: 'Public',       dot: 'bg-rose-400'      },
@@ -213,7 +215,7 @@ export default function SubjectsPage() {
         <Search size={20} className="text-slate-400 flex-shrink-0" />
         <input
           type="text"
-          placeholder="Search subjects..."
+          placeholder="Search courses..."
           className="w-full bg-transparent border-none focus:ring-0 px-4 py-4 font-semibold text-slate-600 placeholder:text-slate-300"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -229,7 +231,7 @@ export default function SubjectsPage() {
       {loading ? (
         <div className="h-64 flex flex-col items-center justify-center gap-4 text-slate-400">
           <Loader2 size={48} className="animate-spin text-primary" />
-          <p className="font-black uppercase tracking-[0.3em] text-xs">Syncing subjects...</p>
+          <p className="font-black uppercase tracking-[0.3em] text-xs">Syncing courses...</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -244,25 +246,38 @@ export default function SubjectsPage() {
                 <button
                   onClick={(e) => openEdit(course, e)}
                   className="p-1.5 bg-white rounded-xl shadow-md text-slate-400 hover:text-primary transition-colors"
-                  title="Edit subject"
+                  title="Edit course"
                 >
                   <Edit size={14} />
                 </button>
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(course); }}
                   className="p-1.5 bg-white rounded-xl shadow-md text-slate-400 hover:text-red-500 transition-colors"
-                  title="Delete subject"
+                  title="Delete course"
                 >
                   <Trash2 size={14} />
                 </button>
               </div>
 
               {/* Card image area */}
-              <div className="aspect-[4/3] w-full bg-slate-50 rounded-[2rem] mb-6 overflow-hidden relative flex items-center justify-center group-hover:bg-primary/5 transition-colors">
-                <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-2xl shadow-slate-200 text-slate-400 group-hover:text-primary transition-all group-hover:scale-110">
+              <div className="aspect-[4/3] w-full bg-slate-900 rounded-[2rem] mb-6 overflow-hidden relative flex items-center justify-center group-hover:bg-slate-800 transition-colors shadow-inner">
+                {course.background_url ? (
+                  <>
+                    <img 
+                      src={course.background_url} 
+                      className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" 
+                      alt={course.name} 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
+                  </>
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-blue-600/10" />
+                )}
+                
+                <div className="relative z-10 w-20 h-20 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center shadow-2xl text-white group-hover:scale-110 transition-all border border-white/20">
                   <BookOpen size={40} />
                 </div>
-                <div className="absolute top-4 right-4 bg-slate-900 text-white px-3 py-1 rounded-full text-[0.6rem] font-black uppercase tracking-widest shadow-lg">
+                <div className="absolute top-4 right-4 bg-slate-900/80 backdrop-blur-md text-white px-3 py-1 rounded-full text-[0.6rem] font-black uppercase tracking-widest shadow-lg border border-white/10">
                   {course.code}
                 </div>
               </div>
@@ -297,7 +312,7 @@ export default function SubjectsPage() {
             <div className="w-16 h-16 rounded-2xl bg-slate-50 group-hover:bg-primary/10 flex items-center justify-center group-hover:scale-110 group-hover:rotate-90 transition-all duration-400">
               <Plus size={32} />
             </div>
-            <span className="font-black uppercase tracking-widest text-xs">Add Subject</span>
+            <span className="font-black uppercase tracking-widest text-xs">Add Course</span>
           </button>
         </div>
       )}
@@ -326,7 +341,7 @@ export default function SubjectsPage() {
                     </div>
                     <div>
                       <h2 className="text-2xl font-black text-slate-900 leading-none">
-                        {selectedCourse ? 'Edit Subject' : 'Add Subject'}
+                        {selectedCourse ? 'Edit Course' : 'Add Course'}
                       </h2>
                       <p className="text-[0.65rem] text-slate-400 font-semibold uppercase tracking-widest mt-1">
                         {selectedCourse ? 'Update RESPECT registry' : 'Create new RESPECT course'}
@@ -346,7 +361,7 @@ export default function SubjectsPage() {
                 <div className="space-y-5">
                   <div className="space-y-2">
                     <label className="text-[0.65rem] font-black uppercase tracking-widest text-slate-400 px-1">
-                      Subject Name <span className="text-red-400">*</span>
+                      Course Name <span className="text-red-400">*</span>
                     </label>
                     <input
                       name="name"
@@ -359,7 +374,7 @@ export default function SubjectsPage() {
 
                   <div className="space-y-2">
                     <label className="text-[0.65rem] font-black uppercase tracking-widest text-slate-400 px-1">
-                      Subject Code <span className="text-red-400">*</span>
+                      Course Code <span className="text-red-400">*</span>
                     </label>
                     <input
                       name="code"
@@ -368,6 +383,18 @@ export default function SubjectsPage() {
                       defaultValue={selectedCourse?.code}
                       placeholder="e.g. EN, AM, MA"
                       className="w-full bg-slate-50 border border-transparent rounded-2xl px-5 py-4 font-black text-slate-900 placeholder:text-slate-300 uppercase tracking-widest focus:ring-4 focus:ring-primary/10 focus:border-primary/20 transition-all"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[0.65rem] font-black uppercase tracking-widest text-slate-400 px-1">
+                      Background Image URL
+                    </label>
+                    <input
+                      name="background_url"
+                      defaultValue={selectedCourse?.background_url}
+                      placeholder="e.g. https://learningcloud.et/..."
+                      className="w-full bg-slate-50 border border-transparent rounded-2xl px-5 py-4 font-bold text-slate-900 placeholder:text-slate-300 focus:ring-4 focus:ring-primary/10 focus:border-primary/20 transition-all font-mono text-xs"
                     />
                   </div>
 
@@ -402,7 +429,7 @@ export default function SubjectsPage() {
                     {isSubmitting ? (
                       <Loader2 size={20} className="animate-spin" />
                     ) : selectedCourse ? (
-                      'Update Subject'
+                      'Update Course'
                     ) : (
                       <>
                         <Plus size={18} /> Add to Registry
@@ -431,7 +458,7 @@ export default function SubjectsPage() {
               exit={{ opacity: 0, scale: 0.92 }}
               className="relative w-full max-w-md bg-white rounded-[3rem] p-10 shadow-2xl space-y-6"
             >
-              <h2 className="text-2xl font-black text-slate-900">Remove Subject?</h2>
+              <h2 className="text-2xl font-black text-slate-900">Remove Course?</h2>
               <p className="text-slate-500 font-medium leading-relaxed">
                 This will permanently remove{' '}
                 <strong className="text-slate-900">{deleteTarget.name}</strong> from the RESPECT

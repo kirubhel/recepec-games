@@ -14,7 +14,7 @@ import {
 
 const navItems = [
   { name: 'Dashboard',       href: '/respect-minimal-games/admin',                 icon: LayoutDashboard },
-  { name: 'Subjects',        href: '/respect-minimal-games/admin/subjects',         icon: BookOpen        },
+  { name: 'Courses',         href: '/respect-minimal-games/admin/subjects',         icon: BookOpen        },
   { name: 'Game Activity',   href: '/respect-minimal-games/admin/game-activities',  icon: Activity        },
   { name: 'Grade Levels',    href: '/respect-minimal-games/admin/grade-levels',     icon: GraduationCap   },
 ];

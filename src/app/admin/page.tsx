@@ -86,7 +86,7 @@ export default function AdminLanding() {
 
   const tabConfig: { id: TabType; label: string; count: number; icon: React.ElementType; color: string }[] = [
     { id: 'games',   label: 'Game Activities', count: data.games.length,   icon: Gamepad2,     color: 'text-primary bg-primary/10'   },
-    { id: 'courses', label: 'Domains',          count: data.courses.length, icon: BookOpen,     color: 'text-amber-500 bg-amber-50'   },
+    { id: 'courses', label: 'Courses',          count: data.courses.length, icon: BookOpen,     color: 'text-amber-500 bg-amber-50'   },
     { id: 'grades',  label: 'Grade Tracks',     count: data.grades.length,  icon: GraduationCap, color: 'text-emerald-500 bg-emerald-50' },
   ];
 
@@ -102,7 +102,7 @@ export default function AdminLanding() {
           </div>
           <h1 className="text-4xl font-black text-slate-900 tracking-tight">RESPECT Control Center</h1>
           <p className="text-slate-500 font-medium font-serif italic">
-            Manage grade levels, subjects, and game activities for the RESPECT ecosystem.
+            Manage grade levels, courses, and game activities for the RESPECT ecosystem.
           </p>
         </div>
         
@@ -266,7 +266,7 @@ export default function AdminLanding() {
                 {activeTab === 'courses' && (
                   <div className="grid grid-cols-2 gap-6">
                     {filteredCourses.length === 0 ? (
-                      <div className="col-span-2"><EmptyState label="domains" icon={BookOpen} href="/admin/subjects" /></div>
+                      <div className="col-span-2"><EmptyState label="courses" icon={BookOpen} href="/admin/subjects" /></div>
                     ) : filteredCourses.map((course) => (
                       <Link
                         key={course.id}
@@ -279,7 +279,7 @@ export default function AdminLanding() {
                           </div>
                           <div>
                             <h3 className="text-xl font-black text-slate-900 group-hover:text-primary transition-colors">{course.name}</h3>
-                            <p className="text-[0.6rem] font-black text-slate-400 uppercase tracking-widest">RESPECT Domain</p>
+                            <p className="text-[0.6rem] font-black text-slate-400 uppercase tracking-widest">RESPECT Course</p>
                           </div>
                         </div>
                         <ChevronRight size={20} className="text-slate-300 group-hover:text-primary group-hover:translate-x-1 transition-all" />
