@@ -169,8 +169,8 @@ export default function SectionPlayerPage() {
                             />
                         </div>
                     ) : section.image_url ? (
-                        <div className="aspect-video rounded-[2.5rem] overflow-hidden relative shadow-2xl">
-                            <img src={section.image_url} alt="" className="w-full h-full object-cover" />
+                        <div className="rounded-[2.5rem] overflow-hidden relative shadow-2xl bg-white flex items-center justify-center min-h-[300px]">
+                            <img src={section.image_url} alt="" className="w-full h-auto max-h-[70vh] object-contain" />
                         </div>
                     ) : (
                         <div className="aspect-video rounded-[2.5rem] bg-slate-100 flex flex-col items-center justify-center text-slate-300">
@@ -264,8 +264,16 @@ export default function SectionPlayerPage() {
                                 }
 
                                 const hasSummary = activity.summary_questions && (Array.isArray(activity.summary_questions) ? activity.summary_questions.length > 0 : (typeof activity.summary_questions === 'string' && activity.summary_questions !== '[]'));
-                                const typeLabel = hasSummary ? 'Quiz' : (activity.game_type === 5 ? 'Puzzle' : 'Activity');
-                                const labelColor = isDone ? 'text-emerald-500' : (hasSummary ? 'text-amber-400' : 'text-primary');
+                                const typeLabel = 
+                                    activity.game_type === 5 ? 'Puzzle' : 
+                                    activity.game_type === 4 ? 'Arrangement' : 
+                                    activity.game_type === 2 ? 'True or False' : 
+                                    activity.game_type === 1 ? 'Quiz' : 'Activity';
+                                    
+                                const labelColor = isDone ? 'text-emerald-500' : 
+                                    (activity.game_type === 4 ? 'text-violet-400' : 
+                                     activity.game_type === 5 ? 'text-amber-400' : 
+                                     activity.game_type === 2 ? 'text-emerald-400' : 'text-primary');
 
                                 return (
                                     <button 
