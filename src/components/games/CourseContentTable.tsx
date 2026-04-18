@@ -87,8 +87,16 @@ export default function CourseContentTable({ chapters, onStartActivity, onStartP
                   {chapter.isCompleted ? <CheckCircle2 size={16} /> : cIdx + 1}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className={`text-lg md:text-xl font-bold leading-tight ${chapter.isLocked ? 'text-slate-400' : 'text-slate-800'}`}>
+                  <div className="flex items-center gap-2 group/title">
+                    <h3 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!chapter.isLocked) onStartSection(chapter.id);
+                      }}
+                      className={`text-lg md:text-xl font-bold leading-tight transition-colors ${
+                        chapter.isLocked ? 'text-slate-400' : 'text-slate-800 hover:text-primary cursor-pointer underline decoration-primary/0 hover:decoration-primary/30 underline-offset-4'
+                      }`}
+                    >
                       {chapter.title}
                     </h3>
                     {chapter.isLocked && <Lock size={14} className="text-slate-300" />}
@@ -117,7 +125,12 @@ export default function CourseContentTable({ chapters, onStartActivity, onStartP
                           </div>
                         )}
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                          <h4 className="text-base md:text-lg font-black text-slate-700 uppercase tracking-tight">{lesson.title}</h4>
+                          <h4 
+                            onClick={() => onStartSection(lesson.id)}
+                            className="text-base md:text-lg font-black text-slate-700 uppercase tracking-tight cursor-pointer hover:text-primary transition-colors underline decoration-transparent hover:decoration-primary/30 underline-offset-4"
+                          >
+                            {lesson.title}
+                          </h4>
                           <div className="flex flex-wrap gap-2">
                              <button 
                                onClick={() => onStartPuzzle(lesson.id)}
