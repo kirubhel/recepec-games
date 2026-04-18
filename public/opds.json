@@ -118,6 +118,33 @@
           "type": "image/png"
         }
       ]
+    },
+    {
+      "metadata": {
+        "identifier": "https://kokeb.et/respect-minimal-games/student/courses/a9cbdfb1-e0f6-4e93-bc2e-509cf6d42a74",
+        "title": "Ethiopian History",
+        "description": "Learn about the rich history of Ethiopia, including the return of Emperor Haile Selassie I.",
+        "author": "Learning Cloud",
+        "language": "en"
+      },
+      "links": [
+        {
+          "rel": "self",
+          "href": "https://kokeb.et/respect-minimal-games/student/courses/a9cbdfb1-e0f6-4e93-bc2e-509cf6d42a74",
+          "type": "text/html"
+        },
+        {
+          "rel": "http://opds-spec.org/acquisition",
+          "href": "https://kokeb.et/respect-minimal-games/student/courses/a9cbdfb1-e0f6-4e93-bc2e-509cf6d42a74",
+          "type": "text/html"
+        }
+      ],
+      "images": [
+        {
+          "href": "https://kokeb.et/api/storage/proxy?bucket=elearning-assets&objectName=history.png",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }
