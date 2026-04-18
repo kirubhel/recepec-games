@@ -1,0 +1,50 @@
+{
+  "@context": "https://readium.org/webpub-manifest/context.jsonld",
+  "metadata": {
+    "title": "Ethiopian History",
+    "identifier": "https://kokeb.et/respect-minimal-games/units/ethiopian-history",
+    "type": "http://schema.org/EducationalActivity",
+    "author": "Learning Cloud",
+    "language": "en",
+    "modified": "2026-04-18T11:30:00Z",
+    "description": "Explore the rich history of Ethiopia through interactive lessons and games."
+  },
+  "links": [
+    {
+      "rel": "self",
+      "href": "https://kokeb.et/respect-minimal-games/units/ethiopian-history/manifest.json",
+      "type": "application/webpub+json"
+    },
+    {
+      "rel": "http://opds-spec.org/acquisition",
+      "href": "https://kokeb.et/respect-minimal-games/student/courses/a9cbdfb1-e0f6-4e93-bc2e-509cf6d42a74",
+      "type": "text/html"
+    }
+  ],
+  "readingOrder": [
+    {
+      "href": "https://kokeb.et/respect-minimal-games/student/sections/a40f9ef4-218e-47b8-acb9-af5627b1baed",
+      "type": "text/html",
+      "title": "LESSON 1: The Brave King Returns",
+      "order": 1
+    },
+    {
+      "href": "https://kokeb.et/respect-minimal-games/student/sections/0d30275e-1e14-483e-b8ae-543a5ab0d6e0",
+      "type": "text/html",
+      "title": "LESSON 2: The Powerful Queen",
+      "order": 2
+    },
+    {
+      "href": "https://kokeb.et/respect-minimal-games/games/32425e22-04f3-452f-8d3a-bb54880505df",
+      "type": "text/html",
+      "title": "Quiz: The Brave King Returns",
+      "order": 3
+    }
+  ],
+  "images": [
+    {
+      "href": "https://kokeb.et/api/storage/proxy?bucket=elearning-assets&objectName=history.png",
+      "type": "image/png"
+    }
+  ]
+}

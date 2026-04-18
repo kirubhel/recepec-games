@@ -88,6 +88,7 @@ export default function CurriculumManager({ params }: { params: Promise<{ id: st
     enable_instruction_audio: true,
     game_type: 4,
     grade_level_id: '',
+    order_index: 0,
     game_data: {}
   });
 
@@ -159,10 +160,15 @@ export default function CurriculumManager({ params }: { params: Promise<{ id: st
       const enrichedSections = await Promise.all(
         sData.map(async (sec: any) => {
           const activities = await fetchGamesBySection(sec.id);
-          return { ...sec, activities };
+          // Sort activities within section
+          const sortedActivities = activities.sort((a: any, b: any) => (a.order_index || 0) - (b.order_index || 0));
+          return { ...sec, activities: sortedActivities };
         })
       );
-      setSections(enrichedSections);
+      
+      // Sort sections by order_index
+      const sortedSections = enrichedSections.sort((a: any, b: any) => (a.order_index || 0) - (b.order_index || 0));
+      setSections(sortedSections);
       
       // Default grade level for new items
       if (glData.data?.length > 0) {
@@ -195,12 +201,12 @@ export default function CurriculumManager({ params }: { params: Promise<{ id: st
 
     if (isSection) {
       payload.respect_course_id = courseId;
-      payload.order_index = editingItem ? editingItem.order_index : sections.length + 1;
+      payload.order_index = parseInt(formData.order_index as string) || (editingItem ? editingItem.order_index : sections.length + 1);
     } else {
       payload.respect_section_id = activeSectionId;
       payload.game_type = parseInt(formData.game_type as string);
       payload.grade_level_id = formData.grade_level_id || gradeLevels[0]?.id || '';
-      payload.order_index = editingItem ? editingItem.order_index : 0;
+      payload.order_index = parseInt(formData.order_index as string) || (editingItem ? editingItem.order_index : 0);
       payload.course_id = courseId;
       payload.instructions = formData.instructions;
       payload.points_reward = formData.points_reward;
@@ -287,7 +293,7 @@ export default function CurriculumManager({ params }: { params: Promise<{ id: st
           onClick={() => { 
             setEditingItem(null); 
             setQuestions([]); 
-            setFormData({ title: '', description: '', image_url: '', video_url: '', content_body: [''], game_type: 4 });
+            setFormData({ title: '', description: '', image_url: '', video_url: '', content_body: [''], game_type: 4, order_index: sections.length + 1 });
             setShowModal('section'); 
             setModalTab('basics'); 
           }}
@@ -382,11 +388,16 @@ export default function CurriculumManager({ params }: { params: Promise<{ id: st
                 {section.activities.map((activity) => (
                   <div key={activity.id} className="group bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
                      <div className="flex items-center justify-between mb-4">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                         <div className="flex items-center gap-3">
+                            <span className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center text-[0.6rem] font-black">
+                               {activity.order_index}
+                            </span>
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                            activity.game_type === 5 ? 'bg-secondary/10 text-secondary' : 'bg-primary/10 text-primary'
                         }`}>
                            {activity.game_type === 5 ? <Puzzle size={20} /> : <Gamepad2 size={20} />}
                         </div>
+                         </div>
                         <div className="flex gap-2">
                           <button 
                             onClick={() => { 
@@ -401,6 +412,7 @@ export default function CurriculumManager({ params }: { params: Promise<{ id: st
                               content_body: parseContentBody(activity.content_body),
                               game_type: activity.game_type || 4,
                               grade_level_id: activity.respect_grade_level_id || gradeLevels[0]?.id || '',
+                              order_index: activity.order_index || 0,
                               instructions: activity.instructions || '',
                               points_reward: activity.points_reward || 10,
                               time_limit: activity.time_limit || 60,
@@ -423,7 +435,10 @@ export default function CurriculumManager({ params }: { params: Promise<{ id: st
                      </div>
                      <h3 className="font-black text-slate-900 leading-tight mb-2 uppercase text-sm">{activity.title}</h3>
                      <p className="text-[0.6rem] font-black uppercase tracking-widest text-slate-400">
-                        {activity.game_type === 5 ? 'Puzzle Activity' : 'Choice Activity'}
+                        {activity.game_type === 5 ? 'Puzzle Activity' : 
+                         activity.game_type === 4 ? 'Arrangement Activity' : 
+                         activity.game_type === 1 ? 'Quiz Activity' : 
+                         activity.game_type === 2 ? 'True/False' : 'Standard Activity'}
                      </p>
                      <Link href={`/respect-minimal-games/admin/subjects/${courseId}/activities/${activity.id}`} className="mt-6 flex items-center justify-between pt-4 border-t border-slate-50 group/link">
                         <span className="text-[0.65rem] font-black text-primary uppercase tracking-widest group-hover/link:underline">Edit Content</span>
@@ -513,6 +528,15 @@ export default function CurriculumManager({ params }: { params: Promise<{ id: st
                                           </select>
                                        </div>
                                     )}
+                                    <div className="space-y-3">
+                                       <label className="text-[0.65rem] font-black uppercase tracking-[0.2em] text-slate-400 px-1">Order Position</label>
+                                       <input 
+                                         type="number" 
+                                         value={formData.order_index} 
+                                         onChange={(e) => handleFieldChange('order_index', e.target.value)} 
+                                         className="w-full bg-slate-50 border-none rounded-3xl px-8 py-6 font-black text-slate-900 focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-slate-200" 
+                                       />
+                                    </div>
                                  </motion.div>
                                )}
 

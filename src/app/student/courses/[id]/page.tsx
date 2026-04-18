@@ -30,16 +30,21 @@ export default function CourseDetailPage() {
         // Get progress from localStorage
         const progress = JSON.parse(localStorage.getItem('respect_progress') || '{}');
         
+        // Sort sections by order_index
+        const sortedSections = [...sectionsData].sort((a: any, b: any) => (a.order_index || 0) - (b.order_index || 0));
+
         const fullChapters = await Promise.all(
-          sectionsData.map(async (section: any, index: number) => {
+          sortedSections.map(async (section: any, index: number) => {
             const games = await fetchGamesBySection(section.id);
+            // Sort games within section
+            const sortedGames = [...games].sort((a: any, b: any) => (a.order_index || 0) - (b.order_index || 0));
             
             // Logic for unlocking: 
             // 1. First section is always unlocked
             // 2. Subsequent sections are unlocked if the previous section is completed
             let isLocked = false;
             if (index > 0) {
-              const previousSectionId = sectionsData[index - 1].id;
+              const previousSectionId = sortedSections[index - 1].id;
               if (!progress[previousSectionId]) {
                 isLocked = true;
               }
@@ -56,7 +61,7 @@ export default function CourseDetailPage() {
                   id: section.id,
                   title: 'Activities',
                   description: section.description,
-                  activities: games.map((g: any) => ({
+                  activities: sortedGames.map((g: any) => ({
                     id: g.id,
                     title: g.title,
                     type: g.game_type === 5 ? 'puzzle' : 'activity',
