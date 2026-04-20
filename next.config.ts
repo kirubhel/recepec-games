@@ -84,13 +84,12 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        // This allows prefixed links to work while the app is hosted behind a proxy stripping the prefix
-        source: '/respect-minimal-games/:path((?!api/).*)',
-        destination: '/:path*',
+        source: '/api/storage/:path*',
+        destination: 'https://learningcloud.et/api/storage/:path*',
       },
       {
-        source: '/api/:path*',
-        destination: 'https://learningcloud.et/api/:path*',
+        source: '/api/((?!respect/).*)',
+        destination: 'https://learningcloud.et/api/:1',
       },
     ];
   },
@@ -108,6 +107,12 @@ const nextConfig: NextConfig = {
         headers: [
           { key: "Content-Type", value: "application/json" },
           { key: "Cache-Control", value: "public, max-age=3600" },
+        ],
+      },
+      {
+        source: "/api/respect/opds",
+        headers: [
+          { key: "Content-Type", value: "application/json" },
         ],
       },
       {

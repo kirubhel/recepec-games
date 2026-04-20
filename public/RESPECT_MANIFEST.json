@@ -4,7 +4,7 @@
   "description": { "en-US": "Fun educational games for literacy and numeracy." },
   "license": "MIT",
   "icon": "https://kokeb.et/respect-minimal-games/logo.png",
-  "learningUnits": "https://kokeb.et/respect-minimal-games/opds.json",
+  "learningUnits": "https://kokeb.et/respect-minimal-games/api/respect/opds",
   "defaultLaunchUri": "https://kokeb.et/respect-minimal-games/",
   "web": {
     "url": "https://kokeb.et/respect-minimal-games/"

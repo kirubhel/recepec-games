@@ -204,7 +204,7 @@ export default function Home() {
                 >
                   <div className="bg-slate-900 border border-white/20 p-8 rounded-[3rem] hover:bg-slate-800 transition-all duration-500 relative overflow-hidden h-full shadow-2xl">
                     {/* Background Overlay or Image */}
-                    {course.background_url ? (
+                    {course.background_url && course.background_url !== 'null' ? (
                        <>
                           <img 
                             src={course.background_url} 
@@ -294,15 +294,16 @@ export default function Home() {
                       <div className="relative aspect-[4/3] rounded-[3rem] overflow-hidden bg-white shadow-2xl group-hover:shadow-primary/30 transition-all duration-500 border-4 border-white">
                         {/* Game Thumbnail with Fallback to Logo */}
                         <div className="absolute inset-0 bg-slate-100 flex items-center justify-center overflow-hidden">
-                           <img 
-                              src={game.thumbnail_url || game.image_url || '/respect-minimal-games/logo.png'} 
-                              alt={game.title}
-                              className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${(!game.thumbnail_url && !game.image_url) ? 'opacity-20 translate-y-4 contrast-125' : ''}`}
-                           />
-                           {(!game.thumbnail_url && !game.image_url) && (
-                              <div className="absolute inset-x-0 bottom-12 flex flex-col items-center gap-2 px-10 text-center">
-                                 <img src="/respect-minimal-games/logo.png" className="w-20 mb-4 opacity-100 drop-shadow-2xl" alt="Logo" />
-                              </div>
+                           {game.thumbnail_url && game.thumbnail_url !== 'null' || game.image_url && game.image_url !== 'null' ? (
+                             <img 
+                                src={game.thumbnail_url || game.image_url} 
+                                alt={game.title}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                             />
+                           ) : (
+                             <div className="absolute inset-x-0 bottom-12 flex flex-col items-center gap-2 px-10 text-center">
+                                <img src="/respect-minimal-games/logo.png" className="w-20 mb-4 opacity-100 drop-shadow-2xl" alt="Logo" />
+                             </div>
                            )}
                         </div>
                         

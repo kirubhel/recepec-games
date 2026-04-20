@@ -371,7 +371,7 @@ export default function GamePlayPage() {
         {showAssessment && (
           <AssessmentLayer 
             questions={game.summary_questions}
-            heroImage={game.image_url || game.thumbnail_url}
+            heroImage={(game.image_url && game.image_url !== 'null') ? game.image_url : (game.thumbnail_url && game.thumbnail_url !== 'null' ? game.thumbnail_url : undefined)}
             onComplete={() => {
               // Save summary completion to progress
               const savedProgress = localStorage.getItem(`mission_progress_${id}_v3`);

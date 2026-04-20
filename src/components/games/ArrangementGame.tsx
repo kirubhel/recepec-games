@@ -177,7 +177,7 @@ const ArrangementGame = forwardRef((props: ArrangementGameProps, ref) => {
         animate={{ scale: 1, opacity: 1 }}
         className="w-full max-w-3xl flex flex-col items-center"
       >
-        {data.image && data.image.trim() !== '' && (
+        {data.image && data.image !== 'null' && data.image.trim() !== '' && (
           <div onClick={() => data.audio && new Audio(data.audio).play()}
             className="w-48 h-48 md:w-64 md:h-64 bg-white rounded-[40px] shadow-2xl overflow-hidden mb-6 border-4 border-white p-3 relative cursor-pointer hover:scale-[1.02] active:scale-95 transition-all group/img"
           >
